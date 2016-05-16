@@ -27,6 +27,7 @@ class MyHandler(PatternMatchingEventHandler):
         print event.src_path, event.event_type  # print now only for degug
         xml = ('%s' % event.src_path)
         print 'xml =', xml 
+        time.sleep(1)
         focus = parse_names(xml)
         print "focus =", focus
         if focus == '0':
