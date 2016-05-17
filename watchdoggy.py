@@ -26,8 +26,7 @@ class MyHandler(PatternMatchingEventHandler):
         print "Path =", event.src_path
         print event.src_path, event.event_type  # print now only for degug
         xml = ('%s' % event.src_path)
-        print 'xml =', xml 
-        time.sleep(1)
+        print 'xml =', xml
         focus = parse_names(xml)
         print "focus =", focus
         if focus == '0':
@@ -47,6 +46,8 @@ class MyHandler(PatternMatchingEventHandler):
 
     def on_created(self, event):
         print "observer =", observer
+        ##wait for 10 seconds for some reason doesn't parse correctly at first (fix??)
+        time.sleep(10)
         self.process(event)
 
 if 1 == 1:

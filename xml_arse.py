@@ -88,6 +88,7 @@ def crackvar(crackme):
 #ET.parse takes one argument and returns a parsed 
 #representation of the XML document. 
 def parse_names(XML): 
+   print "XML:", XML
    tree = ET.parse(XML)
    print "xml tree:", tree
    #fetch the root element:
