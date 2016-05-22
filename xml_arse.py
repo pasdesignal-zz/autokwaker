@@ -17,15 +17,37 @@ import os
 DN = open(os.devnull, 'w')
 XML = ""
 
-def xml_write(essid, channel, bssid, packets):
+def xml_write_focus(name, PID, dest):
+   root = ET.Element("process")
+   ET.SubElement(root, "name").text = "%s" % (name)
+   ET.SubElement(root, "PID").text = "%s" % (PID)
+   tree = ET.ElementTree(root)
+   tree.write(dest)
+
+def xml_parse_focus(target):
+   #print "target:", target
+   tree = ET.parse(target)
+   #print "tree:", tree
+   root = tree.getroot()
+   #print "root:", root
+   for child in root:
+      #print "child:", child
+      essid = child.find("essid").text
+      channel = child.find("channel").text
+      bssid = child.find("bssid").text
+      params = [essid, channel, bssid]
+      return params
+
+def xml_write_general(essid, channel, bssid, packets, clients, dest):
    root = ET.Element("targets")
    doc = ET.SubElement(root, "network")
    ET.SubElement(doc, "essid").text = "%s" % (essid)
    ET.SubElement(doc, "channel").text = "%s" % (channel)
    ET.SubElement(doc, "bssid").text = "%s" % (bssid)
    ET.SubElement(doc, "packets").text = "%s" % (packets)
+   ET.SubElement(doc, "clients").text = "%s" % (clients)
    tree = ET.ElementTree(root)
-   tree.write('/home/odroid/targets/target.xml')
+   tree.write(dest)
 
 #Tests for signal level greater than -80dBm
 def test_power(network):
@@ -41,10 +63,6 @@ def test_power(network):
 #Tests for sufficient traffic to be worth cracking(indicative of activity)
 def test_packets(network):
    packets = int((network.find("packets")).find("total").text)
-   if packets >= 1:
-      packets = 1
-   else:
-      packets = 0
    return packets
 
 #this function tests for attached clients
@@ -109,7 +127,8 @@ def parse_names(XML):
          print "Clients:", clients
          if clients >=  1:
             packets = test_packets(child)
-            if packets >= 1: 
+            print "Packets:", packets
+            if packets >= 4: 
                SSID = child.find("SSID")
                print "SSID:", SSID
                if SSID:
