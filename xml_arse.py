@@ -6,6 +6,9 @@
 #as a variable
 
 ##Further development:
+####!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!####
+##!!!! Make this an object based module: 1 for parsing and one for writing!!!!!!!!!!!##
+####!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!####
 ##Return a list of networks that satisfy
 ##criteria, not just the first.
 
@@ -35,6 +38,7 @@ def xml_parse_focus(target):
       essid = child.find("essid").text
       channel = child.find("channel").text
       bssid = child.find("bssid").text
+      #clients_list = child.find("clients_list").text
       params = [essid, channel, bssid]
       return params
 
@@ -45,7 +49,7 @@ def xml_write_general(essid, channel, bssid, packets, clients, dest):
    ET.SubElement(doc, "channel").text = "%s" % (channel)
    ET.SubElement(doc, "bssid").text = "%s" % (bssid)
    ET.SubElement(doc, "packets").text = "%s" % (packets)
-   ET.SubElement(doc, "clients").text = "%s" % (clients)
+   ET.SubElement(doc, "client_count").text = "%s" % (client_count)
    tree = ET.ElementTree(root)
    tree.write(dest)
 
@@ -53,7 +57,7 @@ def xml_write_general(essid, channel, bssid, packets, clients, dest):
 def test_power(network):
    snr = network.find("snr-info")
    lastsig = int((snr.find("last_signal_dbm")).text)
-   if -lastsig <= 86:
+   if -lastsig <= 80:
       power = 1
       return power
    else:  
@@ -68,14 +72,16 @@ def test_packets(network):
 #this function tests for attached clients
 #returns int if at least one client found, returns 0
 #if none found.
+##THIS NEEDS TO BE IMPROVED TO RETURN CLIENTS MAC ADDRESSES
 def test_clients(network):
+   client_count = 0
+   client_list = []
    if network.findall("wireless-client"):
       clients = network.findall("wireless-client")
       for clit in clients:
-         clients_count = int(clit.attrib["number"])
-   else:
-      clients_count = 0        
-   return clients_count   
+         client_list.append(clit.find("client-mac").text)
+         client_count = int(clit.attrib["number"])        
+   return client_count, client_list   
 
 #Parses element for variables necessary to focus attack 
 #on a crackable wifi network. Returns list of critical
@@ -96,25 +102,15 @@ def crackvar(crackme):
    crackthis ['bssid'] = BSSID
    packets = int((crackme.find("packets")).find("total").text)
    crackthis ['packets'] = packets
-   ##crackthis ['clients_connected'] = clients
    return crackthis
    
-#main program:
-
 #Open XML document using ET parser.
 #This is the one line of code that does all the work: 
 #ET.parse takes one argument and returns a parsed 
 #representation of the XML document. 
 def parse_names(XML): 
-   print "XML:", XML
    tree = ET.parse(XML)
-   print "xml tree:", tree
-   #fetch the root element:
    root = tree.getroot()
-   print "xml tree root element:", root
-   #fetch root tag and attrributes
-   print "root element tag:", root.tag
-   print "root element attributes:", root.attrib
    rootlength = len(root)
    #print "Root element %s has %s child elements:" % (root.tag, rootlength)
    crackable_list = []
@@ -141,18 +137,17 @@ def parse_names(XML):
 def parse_deets(XML,SSID): 
    print "Focussing on wifi network:", SSID
    tree = ET.parse(XML)
-   print "tree:", tree
+   #print "tree:", tree
    root = tree.getroot()
-   print "root:", root
+   #print "root:", root
    for child in root:
-      print "child:", child
+   #   print "child:", child
       crackthis = crackvar(child)
       if crackthis['essid'] == SSID:
-         clients = test_clients(child)
-         crackthis['clients'] = clients
-         break
-      else:
-         1 == 1   
+         client_count, client_list = test_clients(child)
+         crackthis['client_list'] = client_list
+         crackthis['client_count'] = client_count
+         break  
    return crackthis      
 
 

@@ -4,7 +4,10 @@ import os
 from subprocess import Popen, call, PIPE
 
 class validator(object):
-    
+    """A work in progress trying out classes. The validatin object is
+    hopefully a good use case.
+    """
+
     DN = open(os.devnull, 'w')
 
     def __init__(self, target, capfile):
@@ -37,7 +40,6 @@ class validator(object):
         return True    
 
     def strip(self, outfile):
-#Strips cap file down to bare essential packets, uses pyrit
         print "Attempting to strip unnecessary packets from cap file (pyrit)..."
         cmd = ['pyrit',
                '-r', self.capfile,  # input file
@@ -53,8 +55,6 @@ class validator(object):
             print "ERROR: There was a problem stripping handshake file." 
 
     def analyze(self):
-#Analyze cap file for valid handshake capture using pyrit
-#Heavily borrowed from wifite
         print "Attempting to analyze cap file (pyrit)..."
         cmd = ['pyrit', '-r', self.capfile, 'analyze']
         print "cmd =", cmd     
@@ -75,13 +75,13 @@ class validator(object):
                     return True
         return False
 
-#check_me = validator(target, capfile)
-#print "check_me.target =", check_me.target
-#print "check_me.capfile =", check_me.capfile
-#print "check_me.DN =", check_me.DN
-#print "Validating check_me object:"
-#check = check_me.validate_handshake()
-#print "returns:", check
-#analyze = check_me.analyze()
-#print "returns:", 
-#check_me.strip('/home/odroid/hs/stripper.cap')
+check_me = validator(target, capfile)
+print "check_me.target =", check_me.target
+print "check_me.capfile =", check_me.capfile
+print "check_me.DN =", check_me.DN
+print "Validating check_me object:"
+check = check_me.validate_handshake()
+print "returns:", check
+analyze = check_me.analyze()
+print "returns:", 
+check_me.strip('/home/odroid/hs/stripper.cap')
