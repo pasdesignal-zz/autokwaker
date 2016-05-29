@@ -5,7 +5,8 @@ import subprocess
 from subprocess import Popen, call, PIPE
 import os
 
-XML = '/home/odroid/xmls/testes.xml'
+###Improvements:
+##Make this class handle an invalid xml file......
 
 ###Return an xml manipulator object###
 #requires string variable which should be path to xml file to open/parse
@@ -17,15 +18,16 @@ class xml_machine(object):
 
 #Open XML document using ET parser.
 #ET.parse takes one argument and returns a parsed 
-#representation of the XML document. 
+#representation of the XML document.
+##!!!!!Make this tolerate a invalid XML somehow!!!!!!!!!!@######## 
 		self.input_xml = input_xml
-		print "Opening XML:", self.input_xml
+		#print "Opening XML:", self.input_xml				#debug
 		self.tree = ET.parse(self.input_xml)
-		print "tree:", self.tree
+		#print "tree:", self.tree  							#debug
 		self.root = self.tree.getroot()
-		print "root:", self.root
+		#print "root:", self.root 							#debug
 		self.rootlength = len(self.root)
-		print "XML file %s Root element %s has %s child elements:" % (self.input_xml, self.root.tag, self.rootlength)
+		#print "XML file %s Root element %s has %s child elements:" % (self.input_xml, self.root.tag, self.rootlength)
 
 ###Return a list of "crackable" networks within an airodump-ng xml dump###
 	def crackables(self): 
@@ -44,14 +46,17 @@ class xml_machine(object):
 								crackable_list.append(essid)   
 		return crackable_list
 
-##returns dict of properties/deets of wifi network passed as element child from XML file
-##requires string of netwrok essid
+##returns dict of properties/deets of wifi network parsed as element child from XML file
+##requires string "SSID" which is name of target network essid
 	def parse_deets(self, SSID):
 		print "focussing on network SSID:", SSID
+		deets = 'None'
 		for child in self.root:
 			_SSID = child.find("SSID")
+			#print "here _SSID:", _SSID 			#debug
 			if _SSID:
 				_SSID_essid = (_SSID.find("essid").text)
+				#print "_SSID_essid:", _SSID_essid  	#debug
 				if _SSID_essid == SSID:
 					deets = {'essid' : '','channel' : '','bssid' : '','packets' : '',}
 					deets['essid'] = _SSID.find("essid").text
@@ -64,37 +69,51 @@ class xml_machine(object):
 					client_count, client_list = self.test_clients(child)
 					deets['client_count'] = client_count
 					deets['client_list'] = client_list
-			else:
-				deets = 'None'
+					#print "deets:", deets 				#debug
 		return deets
 
-###WRITE####
-		
-	def xml_write_focus(self, name, PID, dest):
-		root = ET.Element("process")
-		ET.SubElement(root, "name").text = "%s" % (name)
-		ET.SubElement(root, "PID").text = "%s" % (PID)
-		tree = ET.ElementTree(root)
-		tree.write(dest)
+	def parse_name(self):
+		for child in self.root:
+			SSID = child.find("SSID")
+			name = SSID.find("essid").text
+			#print "SSID:", SSID 					#debug
+			#print "name:", name 					#debug
+			return name
 
-	def xml_write_general(self, essid, channel, bssid, packets, clients, dest):
+###WRITE####t
+##creates xml object	
+##This could be improved and made more modular
+	def xml_tree(self, essid='', channel='', bssid='', packets='', client_count=0, client_list=[]):
 		root = ET.Element("targets")
-		doc = ET.SubElement(root, "network")
-		ET.SubElement(doc, "essid").text = "%s" % (essid)
-		ET.SubElement(doc, "channel").text = "%s" % (channel)
-		ET.SubElement(doc, "bssid").text = "%s" % (bssid)
-		ET.SubElement(doc, "packets").text = "%s" % (packets)
-		ET.SubElement(doc, "client_count").text = "%s" % (client_count)
-		tree = ET.ElementTree(root)
-		tree.write(dest)
+		net = ET.SubElement(root, "wireless-network")
+		SS = ET.SubElement(net, "SSID")
+		ET.SubElement(SS , "essid").text = "%s" % (essid)
+		ET.SubElement(net, "channel").text = "%s" % (channel)
+		ET.SubElement(net, "BSSID").text = "%s" % (bssid)
+		pac = ET.SubElement(net, "packets")
+		ET.SubElement(pac, "total").text = "%s" % (packets)
+		ET.SubElement(net, "client_count").text = "%s" % (client_count)
+		index = 1
+		for MAC in client_list:
+			#print "MAC:", MAC 				#debug
+			number = str(index)
+			wir = ET.SubElement(net, "wireless-client", {'number':number})
+			ET.SubElement(wir, "client-mac").text = "%s" % (MAC)
+			index = (index + 1)
+		self.tree = ET.ElementTree(root)
+
+##writes xml object to file
+#requires string for output file destination
+	def xml_write(self, output_xml):
+		self.tree.write(output_xml)
 
 ####TESTS####
 
- #Tests for signal level greater than -80dBm
+ #Tests for signal level greater than -XBm
 	def test_power(self, network):
 		snr = network.find("snr-info")
 		lastsig = int((snr.find("last_signal_dbm")).text)
-		if -lastsig <= 80:
+		if -lastsig <= 86:
 			power = 1
 			return power
 		else:  
@@ -117,17 +136,18 @@ class xml_machine(object):
 				client_count = int(clit.attrib["number"])        
 		return client_count, client_list   
 
-print "testing object now..."
-test = xml_machine(XML)
-crackable_list = test.crackables()
-print "crackable_list:", crackable_list
-for cracker in crackable_list:
-	deets = test.parse_deets(cracker)
-	if deets != 'None':
-		print "network essid:", deets["essid"]
-		print "network channel:", deets["channel"]
-		print "network packet count:", deets["packets"]
-		print "network AP MAC:", deets["bssid"]
-		print "network clients detected:", deets["client_count"]
-		print "network client list MAC:", deets["client_list"]
-			
+#print "testing object now..."
+#test = xml_machine(XML)
+#crackable_list = test.crackables()
+#print "crackable_list:", crackable_list
+#for cracker in crackable_list:
+#	deets = test.parse_deets(cracker)
+#	if deets != 'None':
+#		print "network essid:", deets["essid"]
+#		print "network channel:", deets["channel"]
+#		print "network packet count:", deets["packets"]
+#		print "network AP MAC:", deets["bssid"]
+#		print "network clients detected:", deets["client_count"]
+#		print "network client list MAC:", deets["client_list"]
+#test.xml_tree(deets["essid"], deets["channel"],	deets["bssid"], deets["packets"], deets["client_count"],)
+#test.xml_write('/home/odroid/targets/testes_write.xml')

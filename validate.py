@@ -3,14 +3,20 @@
 import os
 from subprocess import Popen, call, PIPE
 
+##Improvements:
+###This code needs to be refined and improved. alot copied here from wifite project..
+###add creds for wifite writer
+####
+
 class validator(object):
     
     DN = open(os.devnull, 'w')
 
-    def __init__(self, target, capfile):
+    def __init__(self, SSID, BSSID, capfile):
         """Return a validator object"""
-        self.target = target
-        self.capfile= capfile
+        self.SSID = SSID
+        self.BSSID = BSSID
+        self.capfile = capfile
 
     def validate_handshake(self):
         """
@@ -20,21 +26,39 @@ class validator(object):
         """
         # Call cowpatty to check if capfile contains a valid handshake.
         cmd = ['cowpatty',
-               '-r', self.capfile,  # input file
-               '-s', self.target,  # SSID
-               '-c']  # Check for handshake
+               '-r', self.capfile,      # input file
+               '-s', self.SSID,         # SSID
+               '-c',                    # check for handshake
+               '-v']                    # verbose mode
         print "cmd =", cmd     
         proc = Popen(cmd, stdout=PIPE, stderr=self.DN)
         proc.wait()
         response = proc.communicate()[0]
-        print "validation result:", response
+        print "strict validation result:", response
+        strict_response = True
         if response.find('incomplete four-way handshake exchange') != -1:
-            return False
+            strict_response = False
         elif response.find('Unsupported or unrecognized pcap file.') != -1:
-            return False
+            strict_response = False
         elif response.find('Unable to open capture file: Success') != -1:
-            return False
-        return True    
+            strict_response = False
+        print "Validation strict mode result:", strict_response    
+        if strict_response == True:
+            return strict_response
+        cmd.append('-2')
+        proc = Popen(cmd, stdout=PIPE, stderr=self.DN)
+        proc.wait()
+        response = proc.communicate()[0]
+        print "non-strict validation result:", response
+        non_strict_response = True
+        if response.find('incomplete four-way handshake exchange') != -1:
+            non_strict_response = False
+        elif response.find('Unsupported or unrecognized pcap file.') != -1:
+            non_strict_response = False
+        elif response.find('Unable to open capture file: Success') != -1:
+            non_strict_response = False 
+        print "Validation non-strict mode result:", non_strict_response    
+        return non_strict_response   
 
     def strip(self, outfile):
 #Strips cap file down to bare essential packets, uses pyrit
@@ -53,6 +77,7 @@ class validator(object):
             print "ERROR: There was a problem stripping handshake file." 
 
     def analyze(self):
+        ####!!!! This needs work, not working yet.........!!!!!!!!!
 #Analyze cap file for valid handshake capture using pyrit
 #Heavily borrowed from wifite
         print "Attempting to analyze cap file (pyrit)..."
@@ -65,8 +90,8 @@ class validator(object):
             # Iterate over every line of output by Pyrit
             if line == '' or line == None: continue
             if line.find("AccessPoint") != -1:
-                hit_essid = (line.find("('" + target.ssid + "')") != -1) and \
-                            (line.lower().find(target.bssid.lower()) != -1)
+                hit_essid = (line.find("('" + self.SSID + "')") != -1) and \
+                            (line.lower().find(self.BSSID.lower()) != -1)
                 #hit_essid = (line.lower().find(target.bssid.lower()))
             else:
                 # If Pyrit says it's good or workable, it's a valid handshake.
