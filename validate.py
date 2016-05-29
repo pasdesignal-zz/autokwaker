@@ -45,7 +45,7 @@ class validator(object):
         print "Validation strict mode result:", strict_response    
         if strict_response == True:
             return strict_response
-        cmd.append('-2')
+        cmd.append('-2')                       #switch to enable "non-strict" validation
         proc = Popen(cmd, stdout=PIPE, stderr=self.DN)
         proc.wait()
         response = proc.communicate()[0]
@@ -82,7 +82,7 @@ class validator(object):
 #Heavily borrowed from wifite
         print "Attempting to analyze cap file (pyrit)..."
         cmd = ['pyrit', '-r', self.capfile, 'analyze']
-        print "cmd =", cmd     
+        #print "cmd =", cmd                 #debug   
         proc = Popen(cmd, stdout=PIPE, stderr=self.DN)
         proc.wait()
         hit_essid = False

