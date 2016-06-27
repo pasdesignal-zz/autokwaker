@@ -7,6 +7,8 @@ import os
 
 ###Improvements:
 ##Make this class handle an invalid xml file......
+##make methods of loading and saving "cracked" APs to/from 
+##dict data structure to/from XML file
 
 ###Return an xml manipulator object###
 #requires string variable which should be path to xml file to open/parse
@@ -28,6 +30,12 @@ class xml_machine(object):
 		#print "root:", self.root 							#debug
 		self.rootlength = len(self.root)
 		#print "XML file %s Root element %s has %s child elements:" % (self.input_xml, self.root.tag, self.rootlength)
+		self.name = 'none'
+		self.channel = 0
+		self.bssid = 'none'
+		self.packets = 0
+		self.client_list = []
+		self.client_count = 0
 
 ###Return a list of "crackable" networks within an airodump-ng xml dump###
 	def crackables(self): 
@@ -38,7 +46,7 @@ class xml_machine(object):
 				clients = self.test_clients(child)
 				if clients >=  1:
 					packets = self.test_packets(child)
-					if packets >= 4: 
+					if packets >= 2: 
 						SSID = child.find("SSID")
 						if SSID:
 							essid = (SSID.find("essid").text)
@@ -49,28 +57,19 @@ class xml_machine(object):
 ##returns dict of properties/deets of wifi network parsed as element child from XML file
 ##requires string "SSID" which is name of target network essid
 	def parse_deets(self, SSID):
-		print "focussing on network SSID:", SSID
-		deets = 'None'
+		print "focussing on network SSID:", SSID  		#debug
 		for child in self.root:
 			_SSID = child.find("SSID")
-			#print "here _SSID:", _SSID 			#debug
 			if _SSID:
 				_SSID_essid = (_SSID.find("essid").text)
-				#print "_SSID_essid:", _SSID_essid  	#debug
 				if _SSID_essid == SSID:
-					deets = {'essid' : '','channel' : '','bssid' : '','packets' : '',}
-					deets['essid'] = _SSID.find("essid").text
-					channel = child.find("channel").text
-					deets['channel'] = channel
-					BSSID = child.find("BSSID").text
-					deets['bssid'] = BSSID
-					packets = int((child.find("packets")).find("total").text)
-					deets['packets'] = packets
+					self.name = _SSID.find("essid").text
+					self.channel = str(child.find("channel").text)
+					self.bssid = str(child.find("BSSID").text)
+					self.packets = int((child.find("packets")).find("total").text)
 					client_count, client_list = self.test_clients(child)
-					deets['client_count'] = client_count
-					deets['client_list'] = client_list
-					#print "deets:", deets 				#debug
-		return deets
+					self.client_count = client_count
+					self.client_list = client_list
 
 	def parse_name(self):
 		for child in self.root:
@@ -78,6 +77,7 @@ class xml_machine(object):
 			name = SSID.find("essid").text
 			#print "SSID:", SSID 					#debug
 			#print "name:", name 					#debug
+			self.name=name
 			return name
 
 ###WRITE####t
@@ -92,7 +92,7 @@ class xml_machine(object):
 		ET.SubElement(net, "BSSID").text = "%s" % (bssid)
 		pac = ET.SubElement(net, "packets")
 		ET.SubElement(pac, "total").text = "%s" % (packets)
-		ET.SubElement(net, "client_count").text = "%s" % (client_count)
+		ET.SubElement(net, "cracked").text = "False"
 		index = 1
 		for MAC in client_list:
 			#print "MAC:", MAC 				#debug
@@ -113,7 +113,7 @@ class xml_machine(object):
 	def test_power(self, network):
 		snr = network.find("snr-info")
 		lastsig = int((snr.find("last_signal_dbm")).text)
-		if -lastsig <= 86:
+		if -lastsig <= 88:
 			power = 1
 			return power
 		else:  
@@ -134,10 +134,41 @@ class xml_machine(object):
 			for clit in clients:
 				client_list.append(clit.find("client-mac").text)
 				client_count = int(clit.attrib["number"])        
-		return client_count, client_list   
+		return client_count, client_list
 
-#print "testing object now..."
-#test = xml_machine(XML)
+	def test_cracked(self):
+		for child in self.root:
+			if child.find("cracked") != None:
+				cracked = str(child.find("cracked").text)
+			else: 
+				cracked = False		
+		return cracked
+
+#xml1='/home/odroid/targets/xml1.xml'
+#xml2='/home/odroid/targets/xml2.xml'
+
+#_xml1 = xml_machine(xml1)
+#_xml2 = xml_machine(xml2)
+
+#_xml1.parse_name()
+#print _xml1.name
+#_xml2.parse_name()
+#print _xml2.name
+#_xml1.parse_deets(_xml1.name)
+#print _xml1.name
+#print _xml1.channel
+#print _xml1.packets
+#print _xml1.bssid
+#print _xml1.client_list
+#print _xml1.client_count
+#_xml2.parse_deets(_xml2.name)
+#print _xml2.name
+#print _xml2.channel
+#print _xml2.packets
+#print _xml2.bssid
+#print _xml2.client_list
+#print _xml2.client_count
+
 #crackable_list = test.crackables()
 #print "crackable_list:", crackable_list
 #for cracker in crackable_list:
