@@ -6,12 +6,10 @@ from subprocess import Popen, call, PIPE
 import os
 
 ###Improvements:
-##Make this class handle an invalid xml file......
-##make methods of loading and saving "cracked" APs to/from 
-##dict data structure to/from XML file
+##Make this class handle an invalid xml file elegantly
 
 ###Return an xml manipulator object###
-#requires string variable which should be path to xml file to open/parse
+#requires string variable which should be path to xml file of interest
 class xml_machine(object):
 	 
 	 ##Class attributes go here
@@ -21,7 +19,7 @@ class xml_machine(object):
 #Open XML document using ET parser.
 #ET.parse takes one argument and returns a parsed 
 #representation of the XML document.
-##!!!!!Make this tolerate a invalid XML somehow!!!!!!!!!!@######## 
+##!!!!!Make this tolerate an invalid XML somehow!!!!!!!!!!@######## 
 		self.input_xml = input_xml
 		#print "Opening XML:", self.input_xml				#debug
 		self.tree = ET.parse(self.input_xml)
@@ -36,8 +34,10 @@ class xml_machine(object):
 		self.packets = 0
 		self.client_list = []
 		self.client_count = 0
+		self.cracked = 'False'
+		self.power = 0
 
-###Return a list of "crackable" networks within an airodump-ng xml dump###
+###Return a list of "crackable" networks within an airodump-ng xml dump
 	def crackables(self): 
 		crackable_list = []
 		for child in self.root:
@@ -54,47 +54,70 @@ class xml_machine(object):
 								crackable_list.append(essid)   
 		return crackable_list
 
-##returns dict of properties/deets of wifi network parsed as element child from XML file
-##requires string "SSID" which is name of target network essid
-	def parse_deets(self, SSID):
-		print "focussing on network SSID:", SSID  		#debug
-		for child in self.root:
-			_SSID = child.find("SSID")
-			if _SSID:
-				_SSID_essid = (_SSID.find("essid").text)
-				if _SSID_essid == SSID:
-					self.name = _SSID.find("essid").text
-					self.channel = str(child.find("channel").text)
-					self.bssid = str(child.find("BSSID").text)
-					self.packets = int((child.find("packets")).find("total").text)
-					client_count, client_list = self.test_clients(child)
-					self.client_count = client_count
-					self.client_list = client_list
+##returns properties of wifi network parsed as element child from XML file
+##requires string "SSID" which is name of targeted network essid
+	def parse_deets(self, SSID=None):
+		if SSID != None:
+			for child in self.root:
+				_SSID = child.find("SSID")
+				if _SSID:
+					_SSID_essid = (_SSID.find("essid").text)
+					if _SSID_essid == SSID:
+						self.name = _SSID.find("essid").text							#name of AP
+						self.channel = str(child.find("channel").text)					#channel of AP
+						self.bssid = str(child.find("BSSID").text)						#MAC of AP device
+						self.packets = int((child.find("packets")).find("total").text)	#packet count of scan
+						snr_info = child.find("snr-info")	
+						if snr_info != None:	
+							self.power = int((child.find("snr-info")).find("max_signal_dbm").text)	#power of AP
+						client_count, client_list = self.test_clients(child)
+						self.client_count = client_count								#clients detected
+						self.client_list = client_list	
+						_cracked = child.find("cracked")								#MAC of clients
+						if _cracked != None:
+							self.cracked = str(child.find("cracked").text)
+		else:
+			for child in self.root:
+				self.name = ((child.find("SSID")).find("essid")).text			#name of AP
+				self.channel = str(child.find("channel").text)					#channel of AP
+				self.bssid = str(child.find("BSSID").text)						#MAC of AP device
+				self.packets = int((child.find("packets")).find("total").text)	#packet count of scan
+				snr_info = child.find("snr-info")	
+				if snr_info != None:	
+					self.power = int((child.find("snr-info")).find("max_signal_dbm").text)	#power of AP
+				client_count, client_list = self.test_clients(child)
+				self.client_count = client_count								#clients detected
+				self.client_list = client_list									#MAC of clients
+				_cracked = child.find("cracked")
+				if _cracked != None:
+					self.cracked = str(child.find("cracked").text)
 
-	def parse_name(self):
-		for child in self.root:
-			SSID = child.find("SSID")
-			name = SSID.find("essid").text
-			#print "SSID:", SSID 					#debug
-			#print "name:", name 					#debug
-			self.name=name
-			return name
+#	def parse_name(self):
+#		for child in self.root:
+#			SSID = child.find("SSID")
+#			name = SSID.find("essid").text
+#			#print "SSID:", SSID 					#debug
+#			#print "name:", name 					#debug
+#			self.name=name
+#			return name
 
 ###WRITE####t
-##creates xml object	
+##creates xml 'element tree' object which can be then written to file	
 ##This could be improved and made more modular
-	def xml_tree(self, essid='', channel='', bssid='', packets='', client_count=0, client_list=[]):
+	def xml_tree(self,):
 		root = ET.Element("targets")
 		net = ET.SubElement(root, "wireless-network")
 		SS = ET.SubElement(net, "SSID")
-		ET.SubElement(SS , "essid").text = "%s" % (essid)
-		ET.SubElement(net, "channel").text = "%s" % (channel)
-		ET.SubElement(net, "BSSID").text = "%s" % (bssid)
 		pac = ET.SubElement(net, "packets")
-		ET.SubElement(pac, "total").text = "%s" % (packets)
-		ET.SubElement(net, "cracked").text = "False"
+		snr = ET.SubElement(net, "snr-info")
+		ET.SubElement(SS , "essid").text = "%s" % (self.name)
+		ET.SubElement(net, "channel").text = "%s" % (self.channel)
+		ET.SubElement(net, "BSSID").text = "%s" % (self.bssid)
+		ET.SubElement(pac, "total").text = "%s" % (self.packets)
+		ET.SubElement(net, "cracked").text = "%s" % (self.cracked)
+		ET.SubElement(snr, "max_signal_dbm").text = "%s" % (self.power)
 		index = 1
-		for MAC in client_list:
+		for MAC in self.client_list:
 			#print "MAC:", MAC 				#debug
 			number = str(index)
 			wir = ET.SubElement(net, "wireless-client", {'number':number})
@@ -103,8 +126,9 @@ class xml_machine(object):
 		self.tree = ET.ElementTree(root)
 
 ##writes xml object to file
-#requires string for output file destination
+#requires string for output file destination/name
 	def xml_write(self, output_xml):
+		print "Writing XML to file:", output_xml
 		self.tree.write(output_xml)
 
 ####TESTS####
@@ -113,7 +137,7 @@ class xml_machine(object):
 	def test_power(self, network):
 		snr = network.find("snr-info")
 		lastsig = int((snr.find("last_signal_dbm")).text)
-		if -lastsig <= 88:
+		if -lastsig <= 88:	#dBm
 			power = 1
 			return power
 		else:  
