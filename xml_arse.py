@@ -5,10 +5,10 @@ import subprocess
 from subprocess import Popen, call, PIPE
 import os
 
-###Improvements:
-##Make this class handle an invalid xml file elegantly
+#Improvements:
+#Make this class handle an invalid xml file elegantly
 
-###Return an xml manipulator object###
+#Return an xml manipulator object###
 #requires string variable which should be path to xml file of interest
 class xml_machine(object):
 	 
@@ -19,7 +19,7 @@ class xml_machine(object):
 #Open XML document using ET parser.
 #ET.parse takes one argument and returns a parsed 
 #representation of the XML document.
-##!!!!!Make this tolerate an invalid XML somehow!!!!!!!!!!@######## 
+#!!!!!Make this tolerate an invalid XML somehow!!!!!!!!!!######## 
 		self.input_xml = input_xml
 		#print "Opening XML:", self.input_xml				#debug
 		self.tree = ET.parse(self.input_xml)
@@ -37,7 +37,7 @@ class xml_machine(object):
 		self.cracked = 'False'
 		self.power = 0
 
-###Return a list of "crackable" networks within an airodump-ng xml dump
+#Return a list of "crackable" networks within an airodump-ng xml dump
 	def crackables(self): 
 		crackable_list = []
 		for child in self.root:
@@ -54,8 +54,8 @@ class xml_machine(object):
 								crackable_list.append(essid)   
 		return crackable_list
 
-##returns properties of wifi network parsed as element child from XML file
-##requires string "SSID" which is name of targeted network essid
+#returns properties of wifi network parsed as element child from XML file
+#requires string "SSID" which is name of targeted network essid
 	def parse_deets(self, SSID=None):
 		if SSID != None:
 			for child in self.root:
@@ -102,8 +102,8 @@ class xml_machine(object):
 #			return name
 
 ###WRITE####t
-##creates xml 'element tree' object which can be then written to file	
-##This could be improved and made more modular
+#creates xml 'element tree' object which can be then written to file	
+#This could be improved and made more modular
 	def xml_tree(self,):
 		root = ET.Element("targets")
 		net = ET.SubElement(root, "wireless-network")
@@ -133,23 +133,23 @@ class xml_machine(object):
 
 ####TESTS####
 
- #Tests for signal level greater than -XBm
+#Tests for signal level greater than -XBm
 	def test_power(self, network):
 		snr = network.find("snr-info")
 		lastsig = int((snr.find("last_signal_dbm")).text)
-		if -lastsig <= 88:	#dBm
+		if -lastsig <= 80:	#dBm
 			power = 1
 			return power
 		else:  
 			power = 0
 			return power
 
-	#Tests for sufficient traffic to be worth cracking(indicative of activity)
+#Tests for sufficient traffic to be worth cracking(indicative of activity)
 	def test_packets(self, network):
 		packets = int((network.find("packets")).find("total").text)
 		return packets
 
-	#this function tests for attached clients within specified network
+#this function tests for attached clients within specified network
 	def test_clients(self, network):
 		client_count = 0
 		client_list = []

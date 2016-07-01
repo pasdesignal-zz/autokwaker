@@ -4,10 +4,10 @@ import os
 import time
 from subprocess import Popen, call, PIPE
 
-##Improvements:
-###This code needs to be refined and improved. alot copied here from wifite project..
-###add creds for wifite writer
-####
+#Improvements:
+#This code needs to be refined and improved. a lot copied here from wifite project..
+#add creds for wifite writer
+
 
 class validator(object):
     
@@ -49,7 +49,7 @@ class validator(object):
         if response != False:
             self.validation_result=True
             return
-        cmd.append('-2')                       #switch to enable "non-strict" validation
+        cmd.append('-2')                  #switch to enable "non-strict" validation
         proc = Popen(cmd, stdout=PIPE, stderr=self.DN)
         proc.wait()
         response = proc.communicate()[0]

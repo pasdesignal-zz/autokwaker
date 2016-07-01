@@ -121,15 +121,15 @@ def sort_by_power(location):
 #looks at folder of xmls and sorts APs based on "last_max_signal" RF power value
 	sort_dict = {}
 	for sort_me in glob.iglob(location):
-		print "file:", sort_me
+		#print "file:", sort_me						#debug
 		sorted_xml = xml_machine(sort_me)
 		sorted_xml.parse_deets()
-		print "name:", sorted_xml.name
-		print "power:", sorted_xml.power
+		#print "name:", sorted_xml.name  			#debug
+		#print "power:", sorted_xml.power
 		sort_dict[sorted_xml.name] = str(sorted_xml.power)
-		print "sort_dict:", sort_dict
+		#print "sort_dict:", sort_dict				#debug
 	_sorted = sorted(sort_dict.items(), key=operator.itemgetter(1))
-	print "sorted result:", _sorted
+	#print "sorted result:", _sorted				#debug
 	return _sorted
 
 def create_ignore_list():
@@ -175,7 +175,7 @@ if __name__ == '__main__':
 					print "Times up, aborting general scan..."	
 					scanning = False
 				if file_list != []:
-					###test for APs that havent previously been cracked/timed-out
+#test for APs that havent previously been cracked/timed-out
 					for _file in file_list:
 						_xml = xml_machine(target_dir+_file)
 						_xml.parse_deets()
@@ -195,11 +195,10 @@ if __name__ == '__main__':
 				scan_list = [x for x in sort_list if x not in ignore_aps]
 				print "scan_list:", scan_list
 				for AP in scan_list:
-					#print "target_dir+file:", (target_dir+file) 				#debug
+					#print "target_dir+file:", (target_dir+file) 		#debug
 					f_xml = xml_machine(target_dir+AP[0]+".xml") 
-					f_xml.parse_deets()
-#Test if AP has already been cracked			
-					if str(f_xml.cracked) == "False":
+					f_xml.parse_deets()			
+					if str(f_xml.cracked) == "False":					#Test if AP has already been cracked	
 #start airodump-ng focussed attack using deets parsed from xml
 						print "Creating focussed scanner object"
 						f_scanner = scanner(iface)

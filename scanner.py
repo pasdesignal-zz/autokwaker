@@ -14,7 +14,7 @@ class scanner(object):
 		self.iface = iface
 
 #scan looking for likely networks
-#when suitable target networks detected stop scan
+#when suitable target networks detected - stop scan
 	def scan(self, out_format='', out_dest='', interval=10, channel=0, essid=0, bssid=0, conn=0):
 		#print "Creating command line for scanning process"			#debug
 		self.cmd = ['airodump-ng']
@@ -38,13 +38,13 @@ class scanner(object):
 			self.cmd.append('--bssid')
 			self.cmd.append(str(bssid))
 		self.cmd.append(self.iface)
-		print "Starting process airodump-ng"				#debug
+		#print "Starting process airodump-ng"				#debug
 		#print "Using command:", self.cmd 					#debug
 		self.proc = Popen(self.cmd, stdout=self.DN, stderr=self.DN)
 		try:
 			while True:
 				time.sleep(1)
-				scanning = conn.recv() 
+				scanning = conn.recv() 			#control from main
 				#print "airodump child scanning:", scanning			#debug
 				if scanning == False:
 					#print "Attempting to kill process scan"		#debug
@@ -76,7 +76,7 @@ class scanner(object):
 						cmd.append(MAC)
 						cmd.append('-D') 		#try this option "disable AP detection"
 						cmd.append(self.iface)
-						print "Using command:", cmd  		#debug
+						#print "Using command:", cmd  		#debug
 						self.proc = Popen(cmd)
 						self.proc.wait()		#wait for deauth subprocess to finish...
 						deauth = True
@@ -90,7 +90,7 @@ class scanner(object):
 		except KeyboardInterrupt:
 			pass				
 					
-## Sends interrupt signal to process
+# Sends interrupt signal to process
 	def send_interrupt(self):
 		#print "attempting to kill process:", self.proc.pid		#debug
 		try:
