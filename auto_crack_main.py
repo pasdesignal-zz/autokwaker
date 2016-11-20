@@ -61,7 +61,7 @@ class MyHandler(PatternMatchingEventHandler):
 		else:
 			print "Potential target WIFI AP(s) detected..."
 			for cracker in crackable_list:
-				print "cracker:", cracker
+				#print "cracker:", cracker 				#debug
 				w_xml.parse_deets(cracker)
 #create/check list of APs that have already been cracked/timed-out and also add any manual exceptions
 #manual exceptions should be able to be cmd line variables
@@ -133,7 +133,8 @@ def sort_by_power(location):
 	return _sorted
 
 def create_ignore_list():
-	ignore_list = ['petonehappinessclub', 'SETUP']
+	#ignore_list = ['petonehappinessclub', 'SETUP']
+	ignore_list = ['petonehappinessclub']
 	for ignore in glob.iglob(target_dir+"*.xml"):
 		ignore_xml = xml_machine(ignore)
 		ignore_xml.parse_deets()
@@ -230,7 +231,7 @@ if __name__ == '__main__':
 							if deauth == True:
 								files_handshake = os.listdir(handshake_dir)
 								for files in files_handshake:		
-	##scan pcap file for valid handshake EAPOL packets
+#scan pcap file for valid handshake EAPOL packets
 									handshake_file = (handshake_dir+files)
 									if handshake_file == (handshake_dir+f_xml.name+"_scan-01.cap"):     
 										valid = validator(SSID=(f_xml.name), 
@@ -238,11 +239,11 @@ if __name__ == '__main__':
 										capfile=handshake_file)
 										print "Validation result of handshake capture:", valid.validation_result
 										print "Analysis result of handshake capture:", valid.analyze_result
-	#when handshake detected stop focussed attack			
+#when handshake detected stop focussed attack			
 										if valid.validation_result or valid.analyze_result == True:			
 											print "Handshake captured, my job here is done..."	
-	#take GPS position and plot name of wifi network on map
-	#To be writted here.....
+#take GPS position and plot name of wifi network on map
+#To be writted here.....
 											f_xml.cracked = 'True'
 											f_xml.xml_tree()
 											f_xml.xml_write(target_dir+f_xml.name+'.xml')	
@@ -252,7 +253,7 @@ if __name__ == '__main__':
 											f_airodump_parent_conn.close()
 											deauth_parent_conn.close()
 											time.sleep(1)
-	#process handshake file here: strip, analyze and validate	
+#process handshake file here: strip, analyze and validate	
 											print "Stripping handshake cap file of unnecessary packets"
 											valid.strip(handshake_dir+valid.SSID+'_strip.cap')
 											print "Vaidating stripped cap file..."

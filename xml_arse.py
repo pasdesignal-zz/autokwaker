@@ -137,7 +137,8 @@ class xml_machine(object):
 	def test_power(self, network):
 		snr = network.find("snr-info")
 		lastsig = int((snr.find("last_signal_dbm")).text)
-		if -lastsig <= 80:	#dBm
+#Make power variable a parameter setable from command line (maybe 3 levels?) 		
+		if -lastsig <= 88:	#dBm
 			power = 1
 			return power
 		else:  
