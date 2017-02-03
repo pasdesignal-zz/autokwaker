@@ -108,11 +108,11 @@ class xml_machine(object):
 #This could be improved and made more modular
 	def xml_tree(self,):
 		root = ET.Element("targets")
+		geo = ET.SubElement(root, "location")
 		net = ET.SubElement(root, "wireless-network")
 		SS = ET.SubElement(net, "SSID")
 		pac = ET.SubElement(net, "packets")
 		snr = ET.SubElement(net, "snr-info")
-		geo = ET.SubElement(net, "geo_location")
 		ET.SubElement(SS , "essid").text = "%s" % (self.name)
 		ET.SubElement(net, "channel").text = "%s" % (self.channel)
 		ET.SubElement(net, "BSSID").text = "%s" % (self.bssid)
