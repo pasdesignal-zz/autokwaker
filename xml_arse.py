@@ -38,6 +38,7 @@ class xml_machine(object):
 		self.power = 0
 		self.geo_lat = 0
 		self.geo_long = 0
+		self.geo_accuracy = 0
 
 #Return a list of "crackable" networks within an airodump-ng xml dump
 	def crackables(self): 
@@ -122,6 +123,7 @@ class xml_machine(object):
 		##added these experimental:
 		ET.SubElement(geo, "geo_lat").text = "%s" % (self.geo_lat)
 		ET.SubElement(geo, "geo_long").text = "%s" % (self.geo_long)
+		ET.SubElement(geo, "geo_accuracy").text = "%s" % (self.geo_accuracy)
 		index = 1
 		for MAC in self.client_list:
 			#print "MAC:", MAC 				#debug
