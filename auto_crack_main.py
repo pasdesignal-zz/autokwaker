@@ -6,6 +6,10 @@ import os
 import signal
 import operator
 import glob
+import requests
+import json
+import sys
+import getopt
 import xml.etree.cElementTree as ET
 from subprocess import Popen, call, PIPE
 from signal import SIGINT, SIGTERM
@@ -19,7 +23,8 @@ from xml_arse import xml_machine
 ####improvements:
 ####
 ###Add commenting
-##
+#
+##!!!!!!!!Remeber Vivet Ramachandra said that the incomplete handshake captures fail unless tidied up!!!!!!!!! This is why verifications are failing...
 #
 ##create temp folders automatically and clean up when finished
 #
@@ -27,11 +32,13 @@ from xml_arse import xml_machine
 #
 #Add some verbose debug reporting functionality
 #
-##Detect interface that is in monitor mode/check
+##Auto detect interface that is in monitor mode/check
 #
 ##Add args feature to alter things like scan time for initial general scan loop
 #
-#"ignore list of previous APs" should be selectable at cmd line avriable
+#"ignore list of previous APs" should be selectable at cmd line avriable - almost there... can accept command line variables now
+#
+##Geo_locate function can be broken out into module
 
 #Dev null variable for subprocesses
 DN = open(os.devnull, 'w')
@@ -43,6 +50,31 @@ target_dir = '/home/odroid/targets/'
 output_dir = '/home/odroid/xmls/'
 handshake_dir = '/home/odroid/hs/'
 cracked_dir = 'home/odroid/cracked/'
+
+#debug/dev for command line arguments
+#print 'Number of arguments:', len(sys.argv), 'arguments.'
+#print 'Argument List:', str(sys.argv)
+
+#parse command line arguments here
+def parse_args(argv):
+   ignore = ''
+   _tidy = ''
+   try:
+      opts, args = getopt.getopt(argv,"hi:t:",["ignore=","tidy="])
+   except getopt.GetoptError:
+      print 'auto_crack_main.py -i <"ignore APs list"> -t <(tidy) "y" or "n">'
+      sys.exit(2)
+   for opt, arg in opts:
+      if opt == '-h':
+         print 'auto_crack_main.py -i <"ignore APs list"> -t <(tidy) "y" or "n">'
+         sys.exit()
+      elif opt in ("-i", "--ignore"):
+         ignore = arg
+      elif opt in ("-t", "--tidy"):
+         _tidy = arg
+   return ignore, _tidy
+
+ignore_arg, tidy_arg = parse_args(sys.argv[1:])
 
 class MyHandler(PatternMatchingEventHandler):
 	
@@ -70,6 +102,13 @@ class MyHandler(PatternMatchingEventHandler):
 					if w_xml.name not in ignore_aps: 	##ignore this AP
 						if w_xml.client_count != 0:
 							#print "client_count:", deets["client_count"]   #debug
+							lat, lng, acc = geo_locate(w_xml.bssid, "0", "0")	#power and snr to be added in future.....
+							print 'lat:', lat
+							print 'lng:', lng
+							print 'acc:', acc
+							w_xml.geo_lat = lat
+							w_xml.geo_long = lng
+							w_xml.geo_accuracy = acc
 							w_xml.xml_tree()
 							w_xml.xml_write(target_dir+cracker+'.xml')
 						else:
@@ -85,37 +124,41 @@ class MyHandler(PatternMatchingEventHandler):
 
 def tidy():
 #Housekeeping function to remove old files	
-	print "Housekeeping..."
-	files_xml = os.listdir(output_dir)
-	print "removing existing xml files:", files_xml
-	for file in  files_xml:
-		try:
-			os.remove(output_dir+file)        
-		except OSError:
-			pass
-	files_targets = os.listdir(target_dir)
-	for file in files_targets:
+	#check that command line arguments hasnt disabled tidy function (for dev/testing)
+	if (tidy_arg != 'n'):
+		print "Housekeeping..."
+		files_xml = os.listdir(output_dir)
+		print "removing existing xml files:", files_xml
+		for file in  files_xml:
+			try:
+				os.remove(output_dir+file)        
+			except OSError:
+				pass
+		files_targets = os.listdir(target_dir)
+		for file in files_targets:
 #test for "self.cracked == False"
-		remove_xml = xml_machine(target_dir+file)
-		remove_xml.parse_deets()
-		#print "remove_xml.cracked:", remove_xml.cracked    			#debug
-		if str(remove_xml.cracked) == 'False':
-			try:
-				print "Removing target xml file:", (target_dir+file)
-				os.remove(target_dir+file)   
-			except OSError:
-				pass
-	files_handshake = os.listdir(handshake_dir)
-	for file in  files_handshake:
-		#test for filename without word "strip" in it 
-		file_string = str(file)
-		strip_test = file_string.find("strip")
-		if strip_test == -1:
-			try:
-				print "removing useless handshake file:", (handshake_dir+file)
-				os.remove(handshake_dir+file)        
-			except OSError:
-				pass
+			remove_xml = xml_machine(target_dir+file)
+			remove_xml.parse_deets()
+			#print "remove_xml.cracked:", remove_xml.cracked    			#debug
+			if str(remove_xml.cracked) == 'False':
+				try:
+					print "Removing target xml file:", (target_dir+file)
+					os.remove(target_dir+file)   
+				except OSError:
+					pass
+		files_handshake = os.listdir(handshake_dir)
+		for file in  files_handshake:
+			#test for filename without word "strip" in it 
+			file_string = str(file)
+			strip_test = file_string.find("strip")
+			if strip_test == -1:
+				try:
+					print "removing useless handshake file:", (handshake_dir+file)
+					os.remove(handshake_dir+file)        
+				except OSError:
+					pass
+	else:
+		print "No housekeeping..."
 
 def sort_by_power(location):
 #looks at folder of xmls and sorts APs based on "last_max_signal" RF power value
@@ -142,6 +185,25 @@ def create_ignore_list():
 			ignore_list.append(ignore_xml.name)
 	print "ignore_list:", ignore_list		
 	return ignore_list
+
+#uses googles geo-location API
+def geo_locate(bssid, strength, ratio):
+	key = 'AIzaSyACZk1FXBvka4ra3DxGg0OYHfPvDTe9Ma0' 	#unique googlemaps api key
+	url = ('https://www.googleapis.com/geolocation/v1/geolocate?key='+key)
+	print "url:", url
+	location_data = {}
+	location_data = {'considerIP' : 'false',
+			'wifiAccessPoints' :[
+			{"macAddress": bssid,"signalStrength": strength,"signalToNoiseRatio": ratio},
+    		]
+  			}
+  	json_data = json.dumps(location_data)
+	location_result = json.loads((requests.post(url, data=json_data)).text)
+	loc = location_result['location']
+	accuracy = location_result['accuracy']
+	lattitude = loc['lat']
+	longitude = loc['lng']
+	return lattitude, longitude, accuracy
 
 if __name__ == '__main__':
 	try:
@@ -198,8 +260,23 @@ if __name__ == '__main__':
 				for AP in scan_list:
 					#print "target_dir+file:", (target_dir+file) 		#debug
 					f_xml = xml_machine(target_dir+AP[0]+".xml") 
-					f_xml.parse_deets()			
+					f_xml.parse_deets()
+					lat, lng, acc = geo_locate(f_xml.bssid, "0", "0")	#power and snr to be added in future.....
+					print 'lat:', lat
+					print 'lng:', lng
+					print 'acc:', acc
+					f_xml.geo_lat = lat
+					f_xml.geo_long = lng
+					f_xml.geo_accuracy = acc			
 					if str(f_xml.cracked) == "False":					#Test if AP has already been cracked	
+#get geo location details from google api here.......
+						#lat, lng, acc = geo_locate(f_xml.bssid, "0", "0")	#power and snr to be added in future.....
+						#print 'lat:', lat
+						#print 'lng:', lng
+						#print 'acc:', acc
+						#f_xml.geo_lat = lat
+						#f_xml.geo_long = lng
+						#f_xml.geo_accuracy = acc
 #start airodump-ng focussed attack using deets parsed from xml
 						print "Creating focussed scanner object"
 						f_scanner = scanner(iface)
@@ -242,8 +319,6 @@ if __name__ == '__main__':
 #when handshake detected stop focussed attack			
 										if valid.validation_result or valid.analyze_result == True:			
 											print "Handshake captured, my job here is done..."	
-#take GPS position and plot name of wifi network on map
-#To be writted here.....
 											f_xml.cracked = 'True'
 											f_xml.xml_tree()
 											f_xml.xml_write(target_dir+f_xml.name+'.xml')	
