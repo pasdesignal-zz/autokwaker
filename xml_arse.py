@@ -81,7 +81,7 @@ class xml_machine(object):
 							self.cracked = str(child.find("cracked").text)
 		else:
 			for child in self.root:
-				if child != None:
+				if (child.find("SSID") != None:
 					self.name = ((child.find("SSID")).find("essid")).text			#name of AP
 					self.channel = str(child.find("channel").text)					#channel of AP
 					self.bssid = str(child.find("BSSID").text)						#MAC of AP device
