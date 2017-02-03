@@ -81,11 +81,12 @@ class xml_machine(object):
 							self.cracked = str(child.find("cracked").text)
 		else:
 			for child in self.root:
-				self.name = ((child.find("SSID")).find("essid")).text			#name of AP
-				self.channel = str(child.find("channel").text)					#channel of AP
-				self.bssid = str(child.find("BSSID").text)						#MAC of AP device
-				self.packets = int((child.find("packets")).find("total").text)	#packet count of scan
-				snr_info = child.find("snr-info")	
+				if child != None:
+					self.name = ((child.find("SSID")).find("essid")).text			#name of AP
+					self.channel = str(child.find("channel").text)					#channel of AP
+					self.bssid = str(child.find("BSSID").text)						#MAC of AP device
+					self.packets = int((child.find("packets")).find("total").text)	#packet count of scan
+					snr_info = child.find("snr-info")	
 				if snr_info != None:	
 					self.power = int((child.find("snr-info")).find("max_signal_dbm").text)	#power of AP
 				client_count, client_list = self.test_clients(child)
