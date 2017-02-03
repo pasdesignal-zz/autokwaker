@@ -36,6 +36,8 @@ class xml_machine(object):
 		self.client_count = 0
 		self.cracked = 'False'
 		self.power = 0
+		self.geo_lat = 0
+		self.geo_long = 0
 
 #Return a list of "crackable" networks within an airodump-ng xml dump
 	def crackables(self): 
@@ -110,12 +112,16 @@ class xml_machine(object):
 		SS = ET.SubElement(net, "SSID")
 		pac = ET.SubElement(net, "packets")
 		snr = ET.SubElement(net, "snr-info")
+		geo = ET.SubElement(net, "geo_location")
 		ET.SubElement(SS , "essid").text = "%s" % (self.name)
 		ET.SubElement(net, "channel").text = "%s" % (self.channel)
 		ET.SubElement(net, "BSSID").text = "%s" % (self.bssid)
 		ET.SubElement(pac, "total").text = "%s" % (self.packets)
 		ET.SubElement(net, "cracked").text = "%s" % (self.cracked)
 		ET.SubElement(snr, "max_signal_dbm").text = "%s" % (self.power)
+		##added these experimental:
+		ET.SubElement(geo, "geo_lat").text = "%s" % (self.geo_lat)
+		ET.SubElement(geo, "geo_long").text = "%s" % (self.geo_long)
 		index = 1
 		for MAC in self.client_list:
 			#print "MAC:", MAC 				#debug
