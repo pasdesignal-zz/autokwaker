@@ -50,7 +50,7 @@ target_dir = '/home/odroid/targets/'
 output_dir = '/home/odroid/xmls/'
 handshake_dir = '/home/odroid/hs/'
 cracked_dir = 'home/odroid/cracked/'
-google_api_dir = 'home/odriod/autokwaker/' ##make this self disocver the current folder
+google_api_dir = 'home/odroid/autokwaker/' ##make this self disocver the current folder
 #debug/dev for command line arguments
 #print 'Number of arguments:', len(sys.argv), 'arguments.'
 #print 'Argument List:', str(sys.argv)
@@ -188,7 +188,6 @@ def create_ignore_list():
 
 #uses googles geo-location API
 def geo_locate(bssid, strength, ratio):
-	#key = 'AIzaSyACZk1FXBvka4ra3DxGg0OYHfPvDTe9Ma0' 	#unique googlemaps api key
 	key_file = (google_api_dir+"google_api.key")
 	key = open(key_file, 'r').read()	
 	print "key:", key
