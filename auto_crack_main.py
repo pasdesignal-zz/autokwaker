@@ -49,8 +49,8 @@ iface = 'wlan1mon'
 target_dir = '/home/odroid/targets/'
 output_dir = '/home/odroid/xmls/'
 handshake_dir = '/home/odroid/hs/'
-cracked_dir = 'home/odroid/cracked/'
-google_api_dir = 'home/odroid/autokwaker/' ##make this self disocver the current folder
+cracked_dir = '/home/odroid/cracked/'
+google_api_dir = '/home/odroid/autokwaker/' ##make this self disocver the current folder
 #debug/dev for command line arguments
 #print 'Number of arguments:', len(sys.argv), 'arguments.'
 #print 'Argument List:', str(sys.argv)
