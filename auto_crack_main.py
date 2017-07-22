@@ -22,7 +22,7 @@ from xml_arse import xml_machine
 from geolocate_api import buildJson, geolocate
 from termcolor import colored #requires: pip install termcolor
 
-testes = "testes"
+testes = "testes12345"
 print colored('hello', 'red'), colored('world', 'green')
 print colored("result:", 'green'), colored(testes, 'green')
 ####improvements:
