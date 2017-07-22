@@ -61,9 +61,9 @@ def parse_args(argv):
    ignore = ''
    _tidy = ''
    try:
-      opts, args = getopt.getopt(argv,"hi:t:",["ignore=","tidy="])
+      opts, args = getopt.getopt(argv,"hi:t:",["ignore=","tidy=","secs="])
    except getopt.GetoptError:
-      print 'auto_crack_main.py -i <"ignore APs list"> -t <(tidy) "y" or "n">'
+      print 'auto_crack_main.py -i <"ignore APs list"> -t <(tidy) "y" or "n"> -s <"seconds">'
       sys.exit(2)
    for opt, arg in opts:
       if opt == '-h':
@@ -73,9 +73,12 @@ def parse_args(argv):
          ignore = arg
       elif opt in ("-t", "--tidy"):
          _tidy = arg
-   return ignore, _tidy
+      elif opt in ("-s", "--secs"):
+         secs = arg   
+   return ignore, _tidy, secs
 
-ignore_arg, tidy_arg = parse_args(sys.argv[1:])
+secs_arg = 30
+ignore_arg, tidy_arg, secs_arg = parse_args(sys.argv[1:])
 
 class MyHandler(PatternMatchingEventHandler):
 	
@@ -117,13 +120,14 @@ class MyHandler(PatternMatchingEventHandler):
 									print "OTHER AP:", closest_AP
 								location_data = buildJson(w_xml.bssid, w_xml.power, w_xml.snr, closest_AP, 0, 0)
 								print"LOCATION DATA", location_data
+								lat, lng, acc = geolocate(location_data)
 								#lat, lng, acc = geo_locate(w_xml.bssid, "0", "0")	#power and snr to be added in future.....
-								#print 'lat:', lat
-								#print 'lng:', lng
-								#print 'acc:', acc
-								#w_xml.geo_lat = lat
-								#w_xml.geo_long = lng
-								#w_xml.geo_accuracy = acc
+								print 'lat:', lat
+								print 'lng:', lng
+								print 'acc:', acc
+								w_xml.geo_lat = lat
+								w_xml.geo_long = lng
+								w_xml.geo_accuracy = acc
 							w_xml.xml_tree()
 							w_xml.xml_write(target_dir+cracker+'.xml')
 						else:
@@ -247,7 +251,7 @@ if __name__ == '__main__':
 				airodump_parent_conn.send(scanning)
 				print "General scan now running for: %.0f seconds" % (time.time() - time_started)
 				file_list = os.listdir(target_dir)
-				if time.time() - time_started >= 20:
+				if time.time() - time_started >= secs_arg:
 					print "Times up, aborting general scan..."	
 					scanning = False
 				if file_list != []:
