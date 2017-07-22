@@ -98,7 +98,8 @@ class xml_machine(object):
 					_cracked = child.find("cracked")
 					if _cracked != None:
 						self.cracked = str(child.find("cracked").text)
-					_location = (child.find("location"))
+					_location = child.find("location")
+					print "LOCATION:", _location
 					if _location != None:
 							print "LOCATION FOUND"
 							self.geo_lat = int((child.find("location")).find("geo_lat").text)
