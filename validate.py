@@ -3,6 +3,9 @@
 import os
 import time
 from subprocess import Popen, call, PIPE
+from termcolor import colored
+
+#print colored('hello', 'red'), colored('world', 'green')
 
 #Improvements:
 #This code needs to be refined and improved. a lot copied here from wifite project..
@@ -36,7 +39,7 @@ class validator(object):
         proc = Popen(cmd, stdout=PIPE, stderr=self.DN)
         proc.wait()
         response = proc.communicate()[0]
-        print "result:", response
+        print colored("result:", response, 'green')
         if response.find('incomplete four-way handshake exchange') != -1:
             response = False
         elif response.find('Unsupported or unrecognized pcap file.') != -1:

@@ -20,10 +20,10 @@ from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
 from xml_arse import xml_machine
 from geolocate_api import buildJson, geolocate
-from termcolor import colored
+from termcolor import colored #requires: pip install termcolor
 
 print colored('hello', 'red'), colored('world', 'green')
-
+print colored("result:", response, 'green')
 ####improvements:
 ####
 ###Add commenting
