@@ -86,7 +86,7 @@ class MyHandler(PatternMatchingEventHandler):
 		time.sleep(0.1)
 		w_xml = xml_machine('%s' % event.src_path)
 		crackable_list = w_xml.crackables()
-		#print "crackable_list:", crackable_list		#debug
+		print "crackable_list:", crackable_list		#debug
 		if crackable_list == '0':
 			print "no luck buddy, keep trying"
 		else:
