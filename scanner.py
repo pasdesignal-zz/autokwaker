@@ -16,7 +16,7 @@ class scanner(object):
 #scan looking for likely networks
 #when suitable target networks detected - stop scan
 	def scan(self, out_format='', out_dest='', interval=10, channel=0, essid=0, bssid=0, conn=0):
-		#print "Creating command line for scanning process"			#debug
+		print "Creating command line for scanning process"			#debug
 		self.cmd = ['airodump-ng']
 		self.cmd.extend (['-a',			#only report attached clients
 			'--output-format',			#output format
@@ -38,16 +38,16 @@ class scanner(object):
 			self.cmd.append('--bssid')
 			self.cmd.append(str(bssid))
 		self.cmd.append(self.iface)
-		#print "Starting process airodump-ng"				#debug
-		#print "Using command:", self.cmd 					#debug
+		print "Starting process airodump-ng"				#debug
+		print "Using command:", self.cmd 					#debug
 		self.proc = Popen(self.cmd, stdout=self.DN, stderr=self.DN)
 		try:
 			while True:
 				time.sleep(1)
 				scanning = conn.recv() 			#control from main
-				#print "airodump child scanning:", scanning			#debug
+				print "airodump child scanning:", scanning			#debug
 				if scanning == False:
-					#print "Attempting to kill process scan"		#debug
+					print "Attempting to kill process scan"		#debug
 					conn.close()
 					self.send_interrupt()	
 					break	
