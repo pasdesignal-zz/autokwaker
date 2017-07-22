@@ -245,7 +245,7 @@ if __name__ == '__main__':
 				airodump_parent_conn.send(scanning)
 				print "General scan now running for: %.0f seconds" % (time.time() - time_started)
 				file_list = os.listdir(target_dir)
-				if time.time() - time_started >= 15:
+				if time.time() - time_started >= 30:
 					print "Times up, aborting general scan..."	
 					scanning = False
 				if file_list != []:
