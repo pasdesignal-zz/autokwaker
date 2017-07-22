@@ -82,6 +82,10 @@ class xml_machine(object):
 						_cracked = child.find("cracked")								#MAC of clients
 						if _cracked != None:
 							self.cracked = str(child.find("cracked").text)
+						if (child.find("location")):
+							self.lat = int((child.find("location")).find("geo_lat").text)
+							self.long = int((child.find("location")).find("geo_long").text)
+							self.accuracy = int((child.find("location")).find("geo_accuracy").text)
 		else:
 			for child in self.root:
 				if (child.find("SSID")) != None:
