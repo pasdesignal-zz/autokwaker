@@ -40,6 +40,8 @@ from geolocate_api import buildJson, geolocate
 ##accept ignore list as comma seperated list
 #
 ##Test that the wifi adaptors are setup correctly
+#
+##Add feature to be persistent - i.e. persist with timeout APs
 
 #Dev null variable for subprocesses
 DN = open(os.devnull, 'w')
