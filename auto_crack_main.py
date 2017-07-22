@@ -267,7 +267,7 @@ if __name__ == '__main__':
 						_xml = xml_machine(target_dir+_file)
 						_xml.parse_deets()
 						if str(_xml.cracked) == 'False':
-							print color("Targets detected, aborting general scan...", 'green')
+							print colored("Targets detected, aborting general scan...", 'green')
 							scanning = False
 							break	   
 			observer.stop()		

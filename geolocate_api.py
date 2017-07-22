@@ -5,6 +5,7 @@
 
 import json
 import requests
+from termcolor import colored #requires: pip install termcolor
 
 #mac1 = 'DC:09:4C:B7:4D:F0'
 #snr1 = 0
@@ -25,13 +26,13 @@ def buildJson(mac1, db1, snr1, mac2, db2, snr2):
 	return text
 
 def geolocate(_data):
-	print color("Attempting geolocation using Goodle API...", 'yellow')
+	print colored("Attempting geolocation using Goodle API...", 'yellow')
 	url = ('https://www.googleapis.com/geolocation/v1/geolocate?key='+key)
 	headers = {'content-type': 'application/json'}
 	location_data = _data
  	#print location_data      #debug
 	location_result = json.loads(requests.post(url, data=location_data, headers=headers).text)
-	print color(location_result, 'yellow')
+	print colored(location_result, 'yellow')
 	loc = location_result['location']
 	accuracy = location_result['accuracy']
 	lattitude = loc['lat']
