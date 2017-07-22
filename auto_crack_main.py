@@ -108,7 +108,7 @@ class MyHandler(PatternMatchingEventHandler):
 						if w_xml.client_count != 0:
 							#geo_locate Wifi AP of interest
 							#first, get another close WIFI AP
-							if geo_list.len() >= 1:
+							if len(geo_list) >= 1:
 								get_index = geo_list.index(w_xml.bssid)
 								if get_index == 0:
 									closest_AP = geo_list[1]
