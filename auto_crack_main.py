@@ -38,6 +38,8 @@ from geolocate_api import buildJson, geolocate
 #"ignore list of previous APs" should be selectable at cmd line avriable - almost there... can accept command line variables now
 #
 ##accept ignore list as comma seperated list
+#
+##Test that the wifi adaptors are setup correctly
 
 #Dev null variable for subprocesses
 DN = open(os.devnull, 'w')
@@ -245,10 +247,11 @@ if __name__ == '__main__':
 				airodump_parent_conn.send(scanning)
 				print "General scan now running for: %.0f seconds" % (time.time() - time_started)
 				file_list = os.listdir(target_dir)
-				if time.time() - time_started >= 30:
+				if time.time() - time_started >= 20:
 					print "Times up, aborting general scan..."	
 					scanning = False
 				if file_list != []:
+					print "HERE HERE HERE"			#debug
 #test for APs that havent previously been cracked/timed-out
 					for _file in file_list:
 						_xml = xml_machine(target_dir+_file)

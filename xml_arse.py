@@ -36,9 +36,11 @@ class xml_machine(object):
 		self.client_count = 0
 		self.cracked = 'False'
 		self.power = 0
+		self.snr = 0
 		self.geo_lat = 0
 		self.geo_long = 0
 		self.geo_accuracy = 0
+
 
 #Return a list of "crackable" networks within an airodump-ng xml dump
 	def crackables(self): 
@@ -73,7 +75,7 @@ class xml_machine(object):
 						snr_info = child.find("snr-info")	
 						if snr_info != None:	
 							self.power = int((child.find("snr-info")).find("max_signal_dbm").text)	#power of AP
-							self.snr = int((child.find("snr-info")).find("last_signal_rssi").text)	#power of AP
+							self.snr = int((child.find("snr-info")).find("max_signal_rssi").text)	#snr of AP
 						client_count, client_list = self.test_clients(child)
 						self.client_count = client_count								#clients detected
 						self.client_list = client_list	
