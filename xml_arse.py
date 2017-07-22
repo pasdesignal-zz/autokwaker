@@ -73,6 +73,7 @@ class xml_machine(object):
 						snr_info = child.find("snr-info")	
 						if snr_info != None:	
 							self.power = int((child.find("snr-info")).find("max_signal_dbm").text)	#power of AP
+							self.snr = int((child.find("snr-info")).find("last_signal_rssi").text)	#power of AP
 						client_count, client_list = self.test_clients(child)
 						self.client_count = client_count								#clients detected
 						self.client_list = client_list	

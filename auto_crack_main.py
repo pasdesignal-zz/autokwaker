@@ -97,21 +97,31 @@ class MyHandler(PatternMatchingEventHandler):
 				w_xml.parse_deets(cracker)
 				#print "BSSD!!!!!!!", w_xml.bssid
 				geo_list.append(w_xml.bssid)
-				print "GEO_LIST:", geo_list
+				#print "GEO_LIST:", geo_list    		#debug
 #create/check list of APs that have already been cracked/timed-out and also add any manual exceptions
 #manual exceptions should be able to be cmd line variables
 				ignore_aps = create_ignore_list()
 				if w_xml.name != 'none':
 					if w_xml.name not in ignore_aps: 	##ignore this AP
 						if w_xml.client_count != 0:
-							#print "client_count:", deets["client_count"]   #debug
-							lat, lng, acc = geo_locate(w_xml.bssid, "0", "0")	#power and snr to be added in future.....
-							#print 'lat:', lat
-							#print 'lng:', lng
-							#print 'acc:', acc
-							w_xml.geo_lat = lat
-							w_xml.geo_long = lng
-							w_xml.geo_accuracy = acc
+							#geo_locate Wifi AP of interest
+							#first, get another close WIFI AP
+							if geo_list.length >= 1:
+								get_index = geo_list.index(w_xml.bssid)
+								if get_index = 0:
+									closest_AP = geo_list[1]
+								if get_index >= 1:
+									closest_AP = geo_list[(get_index-1)]
+									print "OTHER AP:", closest_AP
+								location_data = buildJson(w_xml.bssid, w_xml.power, w_xml.snr, closest_AP, 0, 0)
+								print"LOCATION DATA", location_data
+								#lat, lng, acc = geo_locate(w_xml.bssid, "0", "0")	#power and snr to be added in future.....
+								#print 'lat:', lat
+								#print 'lng:', lng
+								#print 'acc:', acc
+								#w_xml.geo_lat = lat
+								#w_xml.geo_long = lng
+								#w_xml.geo_accuracy = acc
 							w_xml.xml_tree()
 							w_xml.xml_write(target_dir+cracker+'.xml')
 						else:
@@ -123,7 +133,6 @@ class MyHandler(PatternMatchingEventHandler):
 		#time.sleep(1)
 		if os.path.exists(event.src_path):
 			self.process(event)
-
 
 def tidy():
 #Housekeeping function to remove old files	
@@ -236,7 +245,7 @@ if __name__ == '__main__':
 				airodump_parent_conn.send(scanning)
 				print "General scan now running for: %.0f seconds" % (time.time() - time_started)
 				file_list = os.listdir(target_dir)
-				if time.time() - time_started >= 60:
+				if time.time() - time_started >= 15:
 					print "Times up, aborting general scan..."	
 					scanning = False
 				if file_list != []:
