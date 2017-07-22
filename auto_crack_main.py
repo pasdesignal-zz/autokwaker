@@ -197,7 +197,7 @@ def sort_by_power(location):
 	return _sorted
 
 def create_ignore_list():
-	ignore_list = ['petonehappinessclub', 'setup', ignore_arg]
+	ignore_list = ['petonehappinessclub', 'SETUP', ignore_arg]
 	for ignore in glob.iglob(target_dir+"*.xml"):
 		ignore_xml = xml_machine(ignore)
 		ignore_xml.parse_deets()
