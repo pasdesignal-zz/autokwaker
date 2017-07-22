@@ -106,8 +106,8 @@ class xml_machine(object):
 							print self.long
 							self.accuracy = int((child.find("location")).find("geo_accuracy").text)
 							print self.accuracy
-						else:
-							print "NO LOCATION FOUND HERE IN PARSE DEETS"		
+					else:
+						print "NO LOCATION FOUND HERE IN PARSE DEETS"		
 
 #	def parse_name(self):
 #		for child in self.root:
