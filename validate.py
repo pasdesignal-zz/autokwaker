@@ -72,7 +72,7 @@ class validator(object):
                '-r', self.capfile,  # input file
                '-o', outfile,  # output file
                'strip'] #strip command 
-        print color("DEBUG: cmd =", 'red') color(cmd, 'red')     
+        print color("DEBUG: cmd =", 'red'), color(cmd, 'red')     
         proc = Popen(cmd, stdout=PIPE, stderr=self.DN)
         proc.wait()
         if os.path.exists(outfile):
