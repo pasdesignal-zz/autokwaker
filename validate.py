@@ -65,13 +65,14 @@ class validator(object):
         self.validation_result=False
 
     def strip(self, outfile):
+        ####!!!!!This could be done in "strip-live" mode?? faster, less problems??? 
 #Strips cap file down to bare essential packets, uses pyrit
-        print "Attempting to strip unnecessary packets from cap file (pyrit)"
+        print color("Attempting to strip unnecessary packets from cap file (pyrit)", 'yellow')
         cmd = ['pyrit',
                '-r', self.capfile,  # input file
                '-o', outfile,  # output file
                'strip'] #strip command 
-        print "cmd =", cmd     
+        print color("DEBUG: cmd =", 'red') color(cmd, 'red')     
         proc = Popen(cmd, stdout=PIPE, stderr=self.DN)
         proc.wait()
         if os.path.exists(outfile):

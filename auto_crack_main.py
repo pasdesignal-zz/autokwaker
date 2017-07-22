@@ -323,9 +323,9 @@ if __name__ == '__main__':
 										valid = validator(SSID=(f_xml.name), 
 										BSSID=(f_xml.bssid), 
 										capfile=(handshake_file))
-										print "Stripping handshake cap file of unnecessary packets"
+										print color("Stripping handshake cap file of unnecessary packets", 'red')
 										valid.strip(handshake_dir+valid.SSID+'_strip.cap')
-										print "Validating stripped cap file..."
+										print color("Validating stripped cap file...", 'yellow')
 										strip_valid = validator(SSID=(f_xml.name), 
 										BSSID=(f_xml.bssid), 
 										capfile=(handshake_dir+valid.SSID+'_strip.cap'))
@@ -335,7 +335,7 @@ if __name__ == '__main__':
 										print "Analysis result of stripped handshake capture:", strip_valid.analyze_result
 #when handshake detected stop focussed attack			
 										if strip_valid.validation_result or strip_valid.analyze_result == True:			
-											print "Handshake captured, my job here is done..."	
+											print color("Handshake captured, my job here is done...", 'cyan', 'on_magenta') 
 											f_xml.cracked = 'True'
 											f_xml.xml_tree()
 											f_xml.xml_write(target_dir+f_xml.name+'.xml')	
