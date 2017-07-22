@@ -356,7 +356,7 @@ if __name__ == '__main__':
 								if time.time() - time_started >= 30:
 									print "Times up, aborting focussed attack..."
 									f_xml.cracked = 'Timeout'
-									print "testing here:", f_xml.cracked
+									#print "testing here:", f_xml.cracked        #debug
 									f_xml.xml_tree()
 									f_xml.xml_write(target_dir+f_xml.name+'.xml')	
 									f_scanning = False
