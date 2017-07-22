@@ -91,11 +91,11 @@ class MyHandler(PatternMatchingEventHandler):
 			print "no luck buddy, keep trying"
 		else:
 			print "Potential target WIFI AP(s) detected..."
+			geo_list = []
 			for cracker in crackable_list:
 				#print "cracker:", cracker 				#debug
 				w_xml.parse_deets(cracker)
 				#print "BSSD!!!!!!!", w_xml.bssid
-				geo_list =[]
 				geo_list.append(w_xml.bssid)
 				print "GEO_LIST:", geo_list
 #create/check list of APs that have already been cracked/timed-out and also add any manual exceptions
