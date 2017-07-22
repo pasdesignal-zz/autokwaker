@@ -279,12 +279,8 @@ if __name__ == '__main__':
 				print "Suitable Wifi APs for handshake detection:", scan_list
 				for AP in scan_list:
 					#print "target_dir+file:", (target_dir+file) 		#debug
-					f_xml = xml_machine(target_dir+AP[0]+".xml") 
+					f_xml = xml_machine(target_dir+AP[0]+".xml")
 					f_xml.parse_deets()
-					#lat, lng, acc = geo_locate(f_xml.bssid, "0", "0")	#power and snr to be added in future.....
-					#print 'lat:', lat
-					#print 'lng:', lng
-					#print 'acc:', acc
 					print "HERE LAT:",f_xml.geo_lat
 					print "HERE LONG:",f_xml.geo_long
 					print "HERE ACCURACY:",f_xml.geo_accuracy			
