@@ -81,8 +81,8 @@ class MyHandler(PatternMatchingEventHandler):
 
 ##This needs to be improved to tolerate empty/bad xmls...
 	def process(self, event):
-		#print "Path =", event.src_path					#debug
-		#print event.src_path, event.event_type			#debug
+		print "Path =", event.src_path					#debug
+		print event.src_path, event.event_type			#debug
 		time.sleep(0.1)
 		w_xml = xml_machine('%s' % event.src_path)
 		crackable_list = w_xml.crackables()
