@@ -60,6 +60,7 @@ cracked_dir = 'home/odroid/cracked/'
 def parse_args(argv):
    ignore = ''
    _tidy = ''
+   secs = ''
    try:
       opts, args = getopt.getopt(argv,"hi:t:",["ignore=","tidy=","secs="])
    except getopt.GetoptError:
