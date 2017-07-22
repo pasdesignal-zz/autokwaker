@@ -8,7 +8,6 @@ from subprocess import Popen, call, PIPE
 #This code needs to be refined and improved. a lot copied here from wifite project..
 #add creds for wifite writer
 
-
 class validator(object):
     
     DN = open(os.devnull, 'w')
@@ -18,8 +17,8 @@ class validator(object):
         self.SSID = SSID
         self.BSSID = BSSID
         self.capfile = capfile
-        self.validate_handshake()
-        self.analyze()
+        #self.validate_handshake()
+        #self.analyze()
 
     def validate_handshake(self):
         """
@@ -33,19 +32,17 @@ class validator(object):
                '-r', self.capfile,      # input file
                '-s', self.SSID,         # SSID
                '-c',                    # check for handshake
-               '-v']                    # verbose mode
-        print "cmd =", cmd     
+               '-v']                    # verbose mode    
         proc = Popen(cmd, stdout=PIPE, stderr=self.DN)
         proc.wait()
         response = proc.communicate()[0]
-        print "Strict mode:", response
+        print "result:", response
         if response.find('incomplete four-way handshake exchange') != -1:
             response = False
         elif response.find('Unsupported or unrecognized pcap file.') != -1:
             response = False
         elif response.find('Unable to open capture file: Success') != -1:
             response = False
-        print "Validation strict mode result:", response    
         if response != False:
             self.validation_result=True
             return
@@ -53,19 +50,16 @@ class validator(object):
         proc = Popen(cmd, stdout=PIPE, stderr=self.DN)
         proc.wait()
         response = proc.communicate()[0]
-        print "Non-strict mode:", response
         if response.find('incomplete four-way handshake exchange') != -1:
             response = False
         elif response.find('Unsupported or unrecognized pcap file.') != -1:
             response = False
         elif response.find('Unable to open capture file: Success') != -1:
-            response = False 
-        print "Validation non-strict mode result:", response
+            response = False
         if response != False:
             self.validation_result=True
             return
         self.validation_result=False
-
 
     def strip(self, outfile):
 #Strips cap file down to bare essential packets, uses pyrit
@@ -80,9 +74,6 @@ class validator(object):
         if os.path.exists(outfile):
             print "Strip process successful..."
             print "New cap file written to:", outfile
-            self.validate_handshake()
-            time.sleep(1)
-            self.analyze()
         else:
             print "ERROR: There was a problem stripping handshake file." 
 
@@ -93,6 +84,7 @@ class validator(object):
         print "Attempting to analyze pcap file (pyrit)"
         cmd = ['pyrit', '-r', self.capfile, 'analyze']
         #print "cmd =", cmd                 #debug   
+        print "cmd:", cmd
         proc = Popen(cmd, stdout=PIPE, stderr=self.DN)
         proc.wait()
         hit_essid = False
@@ -104,10 +96,12 @@ class validator(object):
                 hit_essid = (line.find("('" + self.SSID + "')") != -1) and \
                             (line.lower().find(self.BSSID.lower()) != -1)
                 #hit_essid = (line.lower().find(target.bssid.lower()))
+                #print "1 hit_essid:", hit_essid
             else:
                 # If Pyrit says it's good or workable, it's a valid handshake.
                 if hit_essid and (line.find(', good, ') != -1 or \
                                               line.find(', workable, ') != -1):
+                    #print "2 hit_essid:", hit_essid
                     self.analyze_result =True
                     return
         self.analyze_result=False

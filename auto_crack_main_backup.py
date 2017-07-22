@@ -33,11 +33,9 @@ from geolocate_api import buildJson, geolocate
 #
 ##Auto detect interface that is in monitor mode/check
 #
-##Add args feature to alter things like scan time for initial general scan loop
+##Add args feature to alter things like scan time for initial general scan loop or to rescan previously failed APs
 #
 #"ignore list of previous APs" should be selectable at cmd line avriable - almost there... can accept command line variables now
-#
-##Geo_locate function can be broken out into module
 #
 ##accept ignore list as comma seperated list
 
@@ -50,8 +48,8 @@ iface = 'wlan1mon'
 target_dir = '/home/odroid/targets/'
 output_dir = '/home/odroid/xmls/'
 handshake_dir = '/home/odroid/hs/'
-cracked_dir = '/home/odroid/cracked/'
-google_api_dir = '/home/odroid/autokwaker/' ##make this self disocver the current folder
+cracked_dir = 'home/odroid/cracked/'
+
 #debug/dev for command line arguments
 #print 'Number of arguments:', len(sys.argv), 'arguments.'
 #print 'Argument List:', str(sys.argv)
@@ -96,6 +94,7 @@ class MyHandler(PatternMatchingEventHandler):
 			for cracker in crackable_list:
 				#print "cracker:", cracker 				#debug
 				w_xml.parse_deets(cracker)
+				print "BSSD!!!!!!!", w_xml.bssid
 #create/check list of APs that have already been cracked/timed-out and also add any manual exceptions
 #manual exceptions should be able to be cmd line variables
 				ignore_aps = create_ignore_list()
@@ -188,9 +187,7 @@ def create_ignore_list():
 
 #uses googles geo-location API
 def geo_locate(bssid, strength, ratio):
-	key_file = (google_api_dir+"google_api.key")
-	key = open(key_file, 'r').read()	
-	print "key:", key
+	key = 'AIzaSyACZk1FXBvka4ra3DxGg0OYHfPvDTe9Ma0' 	#unique googlemaps api key
 	url = ('https://www.googleapis.com/geolocation/v1/geolocate?key='+key)
 	#print "url:", url
 	location_data = {}
@@ -254,22 +251,22 @@ if __name__ == '__main__':
 			if file_list != []:
 #parse xml exported previously with target deets
 				sort_list = sort_by_power(target_dir+"*.xml")
-				print "sort_list:", sort_list
+				#print "sort_list:", sort_list
 				ignore_aps = create_ignore_list()
-				print "ignore_aps", ignore_aps
+				print "Ignoring previously scanned networks:", ignore_aps
 				scan_list = [x for x in sort_list if x not in ignore_aps]
-				print "scan_list:", scan_list
+				print "Suitable Wifi APs for handshake detection:", scan_list
 				for AP in scan_list:
 					#print "target_dir+file:", (target_dir+file) 		#debug
 					f_xml = xml_machine(target_dir+AP[0]+".xml") 
 					f_xml.parse_deets()
-					lat, lng, acc = geo_locate(f_xml.bssid, "0", "0")	#power and snr to be added in future.....
-					print 'lat:', lat
-					print 'lng:', lng
-					print 'acc:', acc
-					f_xml.geo_lat = lat
-					f_xml.geo_long = lng
-					f_xml.geo_accuracy = acc			
+					#lat, lng, acc = geo_locate(f_xml.bssid, "0", "0")	#power and snr to be added in future.....
+					#print 'lat:', lat
+					#print 'lng:', lng
+					#print 'acc:', acc
+					#f_xml.geo_lat = lat
+					#f_xml.geo_long = lng
+					#f_xml.geo_accuracy = acc			
 					if str(f_xml.cracked) == "False":					#Test if AP has already been cracked	
 #start airodump-ng focussed attack using deets parsed from xml
 						print "Creating focussed scanner object:", f_xml.name

