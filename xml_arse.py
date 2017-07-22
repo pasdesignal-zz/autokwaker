@@ -5,6 +5,7 @@ import subprocess
 from subprocess import Popen, call, PIPE
 import os
 
+
 #Improvements:
 #Make this class handle an invalid xml file elegantly
 

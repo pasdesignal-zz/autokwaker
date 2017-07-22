@@ -30,7 +30,7 @@ class validator(object):
             Returns "True" if handshake is found, false otherwise.
         """
         # Call cowpatty to check if capfile contains a valid handshake.
-        print color("Analysing file for EAPOL handshake packets (cowpatty)", 'yellow')
+        print colored("Analysing file for EAPOL handshake packets (cowpatty)", 'yellow')
         cmd = ['cowpatty',
                '-r', self.capfile,      # input file
                '-s', self.SSID,         # SSID
@@ -67,25 +67,25 @@ class validator(object):
     def strip(self, outfile):
         ####!!!!!This could be done in "strip-live" mode?? faster, less problems??? 
 #Strips cap file down to bare essential packets, uses pyrit
-        print color("Attempting to strip unnecessary packets from cap file (pyrit)", 'yellow')
+        print colored("Attempting to strip unnecessary packets from cap file (pyrit)", 'yellow')
         cmd = ['pyrit',
                '-r', self.capfile,  # input file
                '-o', outfile,  # output file
                'strip'] #strip command 
-        print color("DEBUG: cmd =", 'red'), color(cmd, 'red')     
+        print colored("DEBUG: cmd =", 'red'), colored(cmd, 'red')     
         proc = Popen(cmd, stdout=PIPE, stderr=self.DN)
         proc.wait()
         if os.path.exists(outfile):
             print "Strip process successful..."
             print "New cap file written to:", outfile
         else:
-            print color("ERROR: There was a problem stripping handshake file.", 'red')
+            print colored("ERROR: There was a problem stripping handshake file.", 'red')
 
     def analyze(self):
         ####!!!! This needs work, not working yet.........!!!!!!!!!
 #Analyze cap file for valid handshake capture using pyrit
 #Heavily borrowed from wifite
-        print color("Analysing file for EAPOL handshake packets (pyrit)", 'yellow')
+        print colored("Analysing file for EAPOL handshake packets (pyrit)", 'yellow')
         cmd = ['pyrit', '-r', self.capfile, 'analyze']
         #print "cmd =", cmd                 #debug   
         proc = Popen(cmd, stdout=PIPE, stderr=self.DN)
@@ -93,7 +93,7 @@ class validator(object):
         hit_essid = False
         for line in proc.communicate()[0].split('\n'):
             # Iterate over every line of output by Pyrit
-            print color(line, 'green')     #debug
+            print colored(line, 'green')     #debug
             if line == '' or line == None: continue
             if line.find("AccessPoint") != -1:
                 hit_essid = (line.find("('" + self.SSID + "')") != -1) and \
