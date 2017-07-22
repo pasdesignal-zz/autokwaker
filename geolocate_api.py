@@ -6,12 +6,12 @@
 import json
 import requests
 
-mac1 = 'DC:09:4C:B7:4D:F0'
-snr1 = 0
-db1 = 0
-mac2 = '18:1F:45:15:C8:2C'
-snr2 = 0
-db2 = 0
+#mac1 = 'DC:09:4C:B7:4D:F0'
+#snr1 = 0
+#db1 = 0
+#mac2 = '18:1F:45:15:C8:2C'
+#snr2 = 0
+#db2 = 0
 key = 'AIzaSyCJ3ktnOO5l8U-6V9O-0vvmvNb550NSjAs' 	#unique googlemaps api key
 
 def buildJson(mac1, db1, snr1, mac2, db2, snr2):

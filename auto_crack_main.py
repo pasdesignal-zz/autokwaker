@@ -20,6 +20,9 @@ from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
 from xml_arse import xml_machine
 from geolocate_api import buildJson, geolocate
+from termcolor import colored
+
+print colored('hello', 'red'), colored('world', 'green')
 
 ####improvements:
 ####
@@ -55,8 +58,8 @@ handshake_dir = '/home/odroid/hs/'
 cracked_dir = 'home/odroid/cracked/'
 
 #debug/dev for command line arguments
-#print 'Number of arguments:', len(sys.argv), 'arguments.'
-#print 'Argument List:', str(sys.argv)
+print 'Number of arguments:', len(sys.argv), 'arguments.'
+print 'Argument List:', str(sys.argv)
 
 #parse command line arguments here
 def parse_args(argv):
