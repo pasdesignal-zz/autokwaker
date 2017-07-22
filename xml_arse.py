@@ -99,17 +99,15 @@ class xml_machine(object):
 					if _cracked != None:
 						self.cracked = str(child.find("cracked").text)
 					_location = child.find("location")
-					print "LOCATION:", _location
+					#print "LOCATION:", _location
 					if _location != None:
-							print "LOCATION FOUND"
+							#print "LOCATION FOUND"
 							self.geo_lat = str((child.find("location")).find("geo_lat").text)
-							print self.geo_lat
+							#print self.geo_lat
 							self.geo_long = str((child.find("location")).find("geo_long").text)
-							print self.geo_long
+							#print self.geo_long
 							self.geo_accuracy = str((child.find("location")).find("geo_accuracy").text)
-							print self.geo_accuracy
-					else:
-						print "NO LOCATION FOUND HERE IN PARSE DEETS"		
+							#print self.geo_accuracy	
 
 #	def parse_name(self):
 #		for child in self.root:

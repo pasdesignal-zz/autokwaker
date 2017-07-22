@@ -125,9 +125,9 @@ class MyHandler(PatternMatchingEventHandler):
 								print"LOCATION DATA", location_data
 								lat, lng, acc = geolocate(location_data)
 								#lat, lng, acc = geo_locate(w_xml.bssid, "0", "0")	#power and snr to be added in future.....
-								print 'lat:', lat
-								print 'lng:', lng
-								print 'acc:', acc
+								#print 'lat:', lat
+								#print 'lng:', lng
+								#print 'acc:', acc
 								w_xml.geo_lat = lat
 								w_xml.geo_long = lng
 								w_xml.geo_accuracy = acc
@@ -197,7 +197,7 @@ def sort_by_power(location):
 	return _sorted
 
 def create_ignore_list():
-	ignore_list = ['petonehappinessclub', ignore_arg]
+	ignore_list = ['petonehappinessclub', 'setup', ignore_arg]
 	for ignore in glob.iglob(target_dir+"*.xml"):
 		ignore_xml = xml_machine(ignore)
 		ignore_xml.parse_deets()
@@ -280,10 +280,7 @@ if __name__ == '__main__':
 				for AP in scan_list:
 					#print "target_dir+file:", (target_dir+file) 		#debug
 					f_xml = xml_machine(target_dir+AP[0]+".xml")
-					f_xml.parse_deets()
-					print "HERE LAT:",f_xml.geo_lat
-					print "HERE LONG:",f_xml.geo_long
-					print "HERE ACCURACY:",f_xml.geo_accuracy			
+					f_xml.parse_deets()		
 					if str(f_xml.cracked) == "False":					#Test if AP has already been cracked	
 #start airodump-ng focussed attack using deets parsed from xml
 						print "Creating focussed scanner object:", f_xml.name
