@@ -21,7 +21,7 @@ class xml_machine(object):
 #representation of the XML document.
 #!!!!!Make this tolerate an invalid XML somehow!!!!!!!!!!######## 
 		self.input_xml = input_xml
-		print "Opening XML:", self.input_xml				#debug
+		#print "Opening XML:", self.input_xml				#debug
 		self.tree = ET.parse(self.input_xml)
 		#print "tree:", self.tree  							#debug
 		self.root = self.tree.getroot()
