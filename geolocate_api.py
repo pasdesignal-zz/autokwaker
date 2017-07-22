@@ -21,24 +21,25 @@ def buildJson(mac1, db1, snr1, mac2, db2, snr2):
 	{"macAddress": mac1, "signalStrength": db1, "signalToNoiseRatio": snr1}, 
 	{"macAddress": mac2, "signalStrength": db2, "signalToNoiseRatio": snr2},]
 	text = json.dumps(obj)
-	print text
+	#print text  		#debug
 	return text
 
 def geolocate(_data):
+	print color("Attempting geolocation using Goodle API...", 'yellow')
 	url = ('https://www.googleapis.com/geolocation/v1/geolocate?key='+key)
 	headers = {'content-type': 'application/json'}
 	location_data = _data
- 	print location_data
+ 	#print location_data      #debug
 	location_result = json.loads(requests.post(url, data=location_data, headers=headers).text)
-	print(location_result)
+	print color(location_result, 'yellow')
 	loc = location_result['location']
 	accuracy = location_result['accuracy']
 	lattitude = loc['lat']
 	longitude = loc['lng']
-	print("lattitude=", lattitude)
-	print("longitude=", longitude)
-	print("accuracy=", accuracy)
-	print(lattitude, longitude)
+	#print("lattitude=", lattitude)   #debug
+	#print("longitude=", longitude)   #debug
+	#print("accuracy=", accuracy)     #debug
+	#print(lattitude, longitude)      #debug
 	return lattitude, longitude, accuracy
 
 

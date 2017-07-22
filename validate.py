@@ -30,7 +30,7 @@ class validator(object):
             Returns "True" if handshake is found, false otherwise.
         """
         # Call cowpatty to check if capfile contains a valid handshake.
-        print "Attempting to validate pcap file (cowpatty)"
+        print color("Analysing file for EAPOL handshake packets (cowpatty)", 'yellow')
         cmd = ['cowpatty',
                '-r', self.capfile,      # input file
                '-s', self.SSID,         # SSID
@@ -39,7 +39,7 @@ class validator(object):
         proc = Popen(cmd, stdout=PIPE, stderr=self.DN)
         proc.wait()
         response = proc.communicate()[0]
-        print colored("result:", response, 'green')
+        print colored("Handshake search result:", 'green'), colored(response, 'green')    #using colouring for important messages
         if response.find('incomplete four-way handshake exchange') != -1:
             response = False
         elif response.find('Unsupported or unrecognized pcap file.') != -1:
@@ -78,22 +78,21 @@ class validator(object):
             print "Strip process successful..."
             print "New cap file written to:", outfile
         else:
-            print "ERROR: There was a problem stripping handshake file." 
+            print color("ERROR: There was a problem stripping handshake file.", 'red')
 
     def analyze(self):
         ####!!!! This needs work, not working yet.........!!!!!!!!!
 #Analyze cap file for valid handshake capture using pyrit
 #Heavily borrowed from wifite
-        print "Attempting to analyze pcap file (pyrit)"
+        print color("Analysing file for EAPOL handshake packets (pyrit)", 'yellow')
         cmd = ['pyrit', '-r', self.capfile, 'analyze']
         #print "cmd =", cmd                 #debug   
-        print "cmd:", cmd
         proc = Popen(cmd, stdout=PIPE, stderr=self.DN)
         proc.wait()
         hit_essid = False
         for line in proc.communicate()[0].split('\n'):
             # Iterate over every line of output by Pyrit
-            #print line                         #debug
+            print color(line, 'green')     #debug
             if line == '' or line == None: continue
             if line.find("AccessPoint") != -1:
                 hit_essid = (line.find("('" + self.SSID + "')") != -1) and \

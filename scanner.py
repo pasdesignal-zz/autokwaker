@@ -55,7 +55,7 @@ class scanner(object):
 			pass						
 
 	def deauth(self, essid='', bssid='', client_MAC=[], conn=0):
-		print "Starting process aireplay-ng" 				#debug
+		#print "Starting process aireplay-ng" 				#debug
 		self.client_MAC_list = client_MAC
 		scanning = conn.recv() 
 		deauth = False
