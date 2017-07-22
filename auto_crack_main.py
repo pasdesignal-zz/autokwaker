@@ -24,7 +24,7 @@ from termcolor import colored #requires: pip install termcolor
 
 testes = "testes"
 print colored('hello', 'red'), colored('world', 'green')
-print colored("result:", testes, 'green')
+print colored("result:", 'green'), colored(testes, 'green')
 ####improvements:
 ####
 ###Add commenting
