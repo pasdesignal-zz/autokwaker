@@ -62,7 +62,7 @@ def parse_args(argv):
    _tidy = ''
    secs = ''
    try:
-      opts, args = getopt.getopt(argv,"hi:t:",["ignore=","tidy=","secs="])
+      opts, args = getopt.getopt(argv,"hi:t:",["ignore=","_tidy=","secs="])
    except getopt.GetoptError:
       print 'auto_crack_main.py -i <"ignore APs list"> -t <(tidy) "y" or "n"> -s <"seconds">'
       sys.exit(2)
@@ -256,7 +256,6 @@ if __name__ == '__main__':
 					print "Times up, aborting general scan..."	
 					scanning = False
 				if file_list != []:
-					print "HERE HERE HERE"			#debug
 #test for APs that havent previously been cracked/timed-out
 					for _file in file_list:
 						_xml = xml_machine(target_dir+_file)
