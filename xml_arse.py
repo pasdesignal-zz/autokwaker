@@ -102,11 +102,11 @@ class xml_machine(object):
 					print "LOCATION:", _location
 					if _location != None:
 							print "LOCATION FOUND"
-							self.geo_lat = int((child.find("location")).find("geo_lat").text)
+							self.geo_lat = str((child.find("location")).find("geo_lat").text)
 							print self.geo_lat
-							self.geo_long = int((child.find("location")).find("geo_long").text)
+							self.geo_long = str((child.find("location")).find("geo_long").text)
 							print self.geo_long
-							self.geo_accuracy = int((child.find("location")).find("geo_accuracy").text)
+							self.geo_accuracy = str((child.find("location")).find("geo_accuracy").text)
 							print self.geo_accuracy
 					else:
 						print "NO LOCATION FOUND HERE IN PARSE DEETS"		
