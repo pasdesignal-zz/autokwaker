@@ -82,6 +82,17 @@ class xml_machine(object):
 						_cracked = child.find("cracked")								#MAC of clients
 						if _cracked != None:
 							self.cracked = str(child.find("cracked").text)
+						_location = child.find("location")
+						if _location != None:
+							print "LOCATION FOUND"
+							self.geo_lat = int((child.find("location")).find("geo_lat").text)
+							print self.geo_lat
+							self.long = int((child.find("location")).find("geo_long").text)
+							print self.geo_long
+							self.geo_accuracy = int((child.find("location")).find("geo_accuracy").text)
+							print self.geo_accuracy
+						else:
+							print "NO LOCATION FOUND HERE IN PARSE DEETS"		
 		else:
 			for child in self.root:
 				if (child.find("SSID")) != None:
@@ -101,12 +112,12 @@ class xml_machine(object):
 					_location = child.find("location")
 					if _location != None:
 							print "LOCATION FOUND"
-							self.lat = int((child.find("location")).find("geo_lat").text)
-							print self.lat
-							self.long = int((child.find("location")).find("geo_long").text)
-							print self.long
-							self.accuracy = int((child.find("location")).find("geo_accuracy").text)
-							print self.accuracy
+							self.geo_lat = int((child.find("location")).find("geo_lat").text)
+							print self.geo_lat
+							self.geo_long = int((child.find("location")).find("geo_long").text)
+							print self.geo_long
+							self.geo_accuracy = int((child.find("location")).find("geo_accuracy").text)
+							print self.geo_accuracy
 					else:
 						print "NO LOCATION FOUND HERE IN PARSE DEETS"		
 

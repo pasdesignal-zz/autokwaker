@@ -285,9 +285,9 @@ if __name__ == '__main__':
 					#print 'lat:', lat
 					#print 'lng:', lng
 					#print 'acc:', acc
-					#f_xml.geo_lat = lat
-					#f_xml.geo_long = lng
-					#f_xml.geo_accuracy = acc			
+					print "HERE LAT:",f_xml.geo_lat
+					print "HERE LONG:",f_xml.geo_long
+					print "HERE ACCURACY:",f_xml.geo_accuracy			
 					if str(f_xml.cracked) == "False":					#Test if AP has already been cracked	
 #start airodump-ng focussed attack using deets parsed from xml
 						print "Creating focussed scanner object:", f_xml.name
