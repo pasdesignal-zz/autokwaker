@@ -41,5 +41,6 @@ def geolocate(_data):
 	print(lattitude, longitude)
 	return lattitude, longitude, accuracy
 
-location_data = buildJson(mac1, snr1, db1, mac2, snr2, db2)
-geolocate(location_data)
+
+#location_data = buildJson(mac1, snr1, db1, mac2, snr2, db2)
+#geolocate(location_data)
