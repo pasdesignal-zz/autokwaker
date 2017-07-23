@@ -23,7 +23,7 @@ class scanner(object):
 		print colored(self.cmd, 'magenta', 'on_cyan')
 		call(self.cmd)
 		time.sleep(2)
-		call('ifconfig wlan1mon down')
+		call('iwconfig')
 		print "WAITING READING ETC"
 		time.sleep(5)
 		self.cmd = ['airmon-ng']
