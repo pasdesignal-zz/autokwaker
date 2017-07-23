@@ -15,26 +15,14 @@ class scanner(object):
 		self.iface = iface
 
 #Set channel to avoid the wrong channel error....
-	def iface_reset(self, channel):
-		#self.cmd = ['airmon-ng']
-		#self.cmd.extend (['stop',			#only report attached clients
-		#	str(self.iface)],)					
-		#self.cmd = 'ifconfig wlan1mon down'
-		#print colored("airmon-ng command:", 'magenta', 'on_cyan')
-		#print colored(self.cmd, 'magenta', 'on_cyan')
-		#call(self.cmd)
-		#time.sleep(2)
-		call('iwconfig')
+	def set_channel(self, channel):
+		#call('iwconfig')      #debug
 		self.cmd = ['airmon-ng']
 		self.cmd.extend (['start',			#only report attached clients
-			'wlan1'])					
+			'wlan1mon'])					
 		if channel != 0:
-			self.cmd.append(str(channel))	
-		print colored("Airmon-ng command:", 'magenta', 'on_cyan')
-		print colored(self.cmd, 'magenta', 'on_cyan')	
+			self.cmd.append(str(channel))
 		call(self.cmd)
-		print "WAITING READING ETC....."
-		time.sleep(5)
 		
 #scan looking for likely networks
 #when suitable target networks detected - stop scan
@@ -70,16 +58,11 @@ class scanner(object):
 				scanning = conn.recv() 			#control from main
 				#print "airodump child scanning:", scanning			#debug
 				if scanning == False:
-					#print colored("Attempting to kill process scan airodump-ng", 'red')	#debug
 					conn.close()
 					self.send_interrupt()	
 					break	
 				if scanning == "restart":     #experimental
-					#print colored("DEBUG: restart received", 'red')
 					self.send_interrupt()     #experimental
-					#time.sleep(1)            #experimental
-					#print colored("Starting scanning process airodump-ng", 'red')				#debug
-					#print colored("Using command:", 'red'), colored(self.cmd, 'red') 					#debug
 					self.proc = Popen(self.cmd, stdout=self.DN, stderr=self.DN)    #experimental
 
 		except KeyboardInterrupt:

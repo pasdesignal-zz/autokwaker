@@ -306,7 +306,7 @@ if __name__ == '__main__':
 						'client_MAC':(f_xml.client_list),	#expects a list
 						'conn':deauth_child_conn})
 #start airodump-ng process - focussed this time. Captures any 4 way hadnshakes.
-						f_scanner.iface_reset(f_xml.channel)
+						f_scanner.set_channel(f_xml.channel)
 						f_airodump.start()
 #start aireplay-ng process with deauth method. Deauths clients to force handshaking procedure.
 						f_deauth.start()
@@ -314,8 +314,6 @@ if __name__ == '__main__':
 						f_scanning = True
 						handshake_count = 0
 						while f_scanning == True:
-							#print colored("sending restart message....", 'red') #necessary for now to delete pcap file
-							#f_airodump_parent_conn.send("restart")
 							time.sleep(1)
 							f_airodump_parent_conn.send(f_scanning)
 							deauth_parent_conn.send(f_scanning)
@@ -332,12 +330,6 @@ if __name__ == '__main__':
 										valid = validator(SSID=(f_xml.name), 
 										BSSID=(f_xml.bssid), 
 										capfile=(handshake_file))
-										#print colored("Stripping handshake cap file of unnecessary packets", 'red')
-										#valid.strip(handshake_dir+valid.SSID+'_strip.cap')
-										#print colored("Validating stripped cap file...", 'yellow')
-										#strip_valid = validator(SSID=(f_xml.name), 
-										#BSSID=(f_xml.bssid), 
-										#capfile=(handshake_dir+valid.SSID+'_strip.cap'))
 										valid.validate_handshake()
 										valid.analyze()
 										print colored("Validation (cowpatty) result of handshake capture:", 'red') 
@@ -358,6 +350,15 @@ if __name__ == '__main__':
 											deauth_parent_conn.close()
 											time.sleep(1)											
 											os.rename(valid.capfile, (handshake_dir+valid.SSID+'_GOOD.cap'))   #untested
+											#
+											#strip pcap file here if you have to...
+											print colored("Stripping handshake cap file of unnecessary packets", 'red')
+											valid.strip(handshake_file)
+											print colored("Validating stripped cap file...", 'yellow')
+											strip_valid = validator(SSID=(f_xml.name), 
+											BSSID=(f_xml.bssid), 
+											capfile=(handshake_file))
+											#
 											break
 										else:
 											#delete pcap file and continue
