@@ -19,7 +19,8 @@ class scanner(object):
 		self.cmd = ['airmon-ng']
 		self.cmd.extend (['stop',			#only report attached clients
 			str(self.iface)],)					
-		print colored("Airmon-ng command:", 'magenta', 'on_cyan')
+		self.cmd = 'ifconfig wlan1mon down'
+		print colored("airmon-ng command:", 'magenta', 'on_cyan')
 		print colored(self.cmd, 'magenta', 'on_cyan')
 		call(self.cmd)
 		time.sleep(2)
@@ -28,12 +29,11 @@ class scanner(object):
 		time.sleep(5)
 		self.cmd = ['airmon-ng']
 		self.cmd.extend (['start',			#only report attached clients
-			str(self.iface)])					
+			wlan1])					
 		if channel != 0:
 			self.cmd.append(str(channel))	
 		print colored("Airmon-ng command:", 'magenta', 'on_cyan')
 		print colored(self.cmd, 'magenta', 'on_cyan')	
-		print colored(self.cmd, 'magenta', 'on_cyan')
 		call(self.cmd)
 		print "WAITING READING ETC....."
 		time.sleep(5)
