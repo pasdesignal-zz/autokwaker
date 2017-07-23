@@ -365,7 +365,7 @@ if __name__ == '__main__':
 											#print colored("Deleting PCAP because no handshake found:", 'red')
 											if handshake_count >= 3:
 												for file in  files_handshake:
-												test for filename without word "strip" in it 
+												#test for filename without word "good" in it 
 													file_string = str(file)
 													good_test = file_string.find("GOOD")
 													if good_test == -1:
