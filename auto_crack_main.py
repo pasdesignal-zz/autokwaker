@@ -86,7 +86,6 @@ def parse_args(argv):
 	return ignore, _tidy, secs, per
 
 ignore_arg, tidy_arg, secs_arg, per_arg = parse_args(sys.argv[1:])
-print "PER_ARG:", per_arg
 
 class MyHandler(PatternMatchingEventHandler):
 	
@@ -203,17 +202,21 @@ def sort_by_power(location):
 
 def create_ignore_list():
 	ignore_list = ['petonehappinessclub', 'SETUP', ignore_arg]
-	if per_arg == False:
-		for ignore in glob.iglob(target_dir+"*.xml"):
-			ignore_xml = xml_machine(ignore)
-			ignore_xml.parse_deets()
-			if str(ignore_xml.cracked) != 'False':
-				ignore_list.append(ignore_xml.name)
-		print "ignore_list:", ignore_list       
-		return ignore_list
-	else:
-		print "Ignore list bypassed due to persistence mode selected"
-		return ignore_list
+	#if per_arg == False:
+	for ignore in glob.iglob(target_dir+"*.xml"):
+		ignore_xml = xml_machine(ignore)
+		ignore_xml.parse_deets()
+		if str(ignore_xml.cracked) == 'Cracked':
+			ignore_list.append(ignore_xml.name)
+		else:
+			if per_arg == False:
+				if str(ignore_xml.cracked) == 'Timeout':
+					ignore_list.append(ignore_xml.name)	
+	print "ignore_list:", ignore_list       
+	return ignore_list
+	#else:
+	#	print "Ignore list bypassed due to persistence mode selected"
+	#	return ignore_list
 
 #uses googles geo-location API
 def geo_locate(bssid, strength, ratio):
