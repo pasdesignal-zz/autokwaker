@@ -16,17 +16,15 @@ class scanner(object):
 
 #Set channel to avoid the wrong channel error....
 	def iface_reset(self, channel):
-		self.cmd = ['airmon-ng']
-		self.cmd.extend (['stop',			#only report attached clients
-			str(self.iface)],)					
-		self.cmd = 'ifconfig wlan1mon down'
-		print colored("airmon-ng command:", 'magenta', 'on_cyan')
-		print colored(self.cmd, 'magenta', 'on_cyan')
-		call(self.cmd)
-		time.sleep(2)
+		#self.cmd = ['airmon-ng']
+		#self.cmd.extend (['stop',			#only report attached clients
+		#	str(self.iface)],)					
+		#self.cmd = 'ifconfig wlan1mon down'
+		#print colored("airmon-ng command:", 'magenta', 'on_cyan')
+		#print colored(self.cmd, 'magenta', 'on_cyan')
+		#call(self.cmd)
+		#time.sleep(2)
 		call('iwconfig')
-		print "WAITING READING ETC"
-		time.sleep(5)
 		self.cmd = ['airmon-ng']
 		self.cmd.extend (['start',			#only report attached clients
 			wlan1])					
