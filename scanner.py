@@ -46,12 +46,18 @@ class scanner(object):
 			while True:
 				time.sleep(1)
 				scanning = conn.recv() 			#control from main
-				#print "airodump child scanning:", scanning			#debug
+				print "airodump child scanning:", scanning			#debug
 				if scanning == False:
 					print colored("Attempting to kill process scan airodump-ng", 'red')	#debug
 					conn.close()
 					self.send_interrupt()	
 					break	
+				if scanning == "restart":     #experimental
+					print colored("DEBUG: restart received", 'red')
+					self.send_interrupt()     #experimental
+					time.sleep(1)            #experimental
+					self.proc = Popen(self.cmd, stdout=self.DN, stderr=self.DN)    #experimental
+
 		except KeyboardInterrupt:
 			pass						
 
