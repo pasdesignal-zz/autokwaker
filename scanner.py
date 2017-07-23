@@ -15,7 +15,7 @@ class scanner(object):
 		self.iface = iface
 
 #Set channel to avoid the wrong channel error....
-	def set_channel(channel)
+	def set_channel(channel):
 		self.cmd = ['airmon-ng']
 		self.cmd.extend (['stop',			#only report attached clients
 			str(self.iface)])					
