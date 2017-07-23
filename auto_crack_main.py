@@ -331,8 +331,9 @@ if __name__ == '__main__':
 										capfile=(handshake_dir+valid.SSID+'_strip.cap'))
 										strip_valid.validate_handshake()
 										strip_valid.analyze()
-										print "Validation result of stripped handshake capture:", strip_valid.validation_result
-										print "Analysis result of stripped handshake capture:", strip_valid.analyze_result
+										print colored("Validation result of stripped handshake capture:", 'red') 
+										print colored(strip_valid.validation_result, 'red')
+										print colored("Analysis result of stripped handshake capture:", strip_valid.analyze_result
 #when handshake detected stop focussed attack			
 										if strip_valid.validation_result or strip_valid.analyze_result == True:			
 											print colored("Handshake captured, my job here is done...", 'cyan', 'on_magenta') 
@@ -346,6 +347,10 @@ if __name__ == '__main__':
 											deauth_parent_conn.close()
 											time.sleep(1)											
 											break
+										else:
+											#delete pcap file and continue
+											os.remove(handshake_file)
+
 #time-out in case no handshakes are captured
 ##make this option (length in seconds) controllable via args???			
 							if f_scanning == True:
