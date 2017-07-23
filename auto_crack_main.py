@@ -72,7 +72,7 @@ def parse_args(argv):
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
-			print 'auto_crack_main.py -i <"ignore APs list"> -t <(tidy) "y" or "n"> -s <"seconds to refresh scan file. Faster = less chance of a suitable AP being discovered. Default=20secs." -p <"persistent mode">'
+			print 'auto_crack_main.py -i <ignore AP> -t <tidy? "y" or "n"> -s <Seconds to refresh scan file. Faster = less chance of a suitable AP being discovered. Default = 20secs.> -p <Persistent mode>'
 			sys.exit()
 		elif opt in ("-i", "--ignore"):
 			ignore = arg
