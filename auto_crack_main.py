@@ -59,8 +59,8 @@ handshake_dir = '/home/odroid/hs/'
 cracked_dir = 'home/odroid/cracked/'
 
 #debug/dev for command line arguments
-print 'Number of arguments:', len(sys.argv), 'arguments.'
-print 'Argument List:', str(sys.argv)
+#print 'Number of arguments:', len(sys.argv), 'arguments.'
+#print 'Argument List:', str(sys.argv)
 
 #parse command line arguments here
 def parse_args(argv):
@@ -175,8 +175,8 @@ def tidy():
 		for file in  files_handshake:
 			#test for filename without word "strip" in it 
 			file_string = str(file)
-			strip_test = file_string.find("strip")
-			if strip_test == -1:
+			good_test = file_string.find("GOOD")
+			if good_test == -1:
 				try:
 					print "removing useless handshake file:", (handshake_dir+file)
 					os.remove(handshake_dir+file)        
@@ -360,11 +360,17 @@ if __name__ == '__main__':
 										else:
 											#delete pcap file and continue
 											#this needs to delete all files except "GOOD" files
-											print colored("Deleting PCAP because no handshake found:", 'red')
-											for files in files_handshake:
-												file_del = str(handshake_dir+files)
-												if 'GOOD' not in file_del:
-													os.remove(file_del)
+											#print colored("Deleting PCAP because no handshake found:", 'red')
+											for file in  files_handshake:
+											#test for filename without word "strip" in it 
+												file_string = str(file)
+												good_test = file_string.find("GOOD")
+												if good_test == -1:
+													try:
+														print "renaming useless handshake file:", (handshake_dir+file)
+														os.rename((handshake_dir+file), (handshake_dir+file+'_BAD'))        
+													except OSError:
+														pass
 											
 
 #time-out in case no handshakes are captured
