@@ -83,8 +83,7 @@ def parse_args(argv):
 			secs = arg
 		elif opt == '-p':
 			per = True     
-
-   return ignore, _tidy, secs, per
+	return ignore, _tidy, secs, per
 
 ignore_arg, tidy_arg, secs_arg, per_arg = parse_args(sys.argv[1:])
 print "PER_ARG:", per_arg
