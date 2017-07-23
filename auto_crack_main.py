@@ -68,7 +68,8 @@ def parse_args(argv):
 	try:
 		opts, args = getopt.getopt(argv,"hi:t:s:p",["ignore=","_tidy=","secs="])
 	except getopt.GetoptError:
-		print 'auto_crack_main.py -i <"ignore APs list"> -t <delete working files automatically "y" or "n"> -s <"seconds">'
+		print 'auto_crack_main.py -i <"ignore APs list"> -t <delete working files automatically "y" or "n"> -s <"seconds"> \
+		-p <persistent mode, ignores timed out APs abnd will continue to try to attack>'
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
