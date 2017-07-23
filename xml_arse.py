@@ -9,12 +9,11 @@ import os
 #Improvements:
 #Make this class handle an invalid xml file elegantly
 
-#Return an xml manipulator object###
+#Return an xml manipulator object
 #requires string variable which should be path to xml file of interest
 class xml_machine(object):
 	 
 	 ##Class attributes go here
-
 	def __init__(self, input_xml):
 
 #Open XML document using ET parser.
@@ -41,7 +40,6 @@ class xml_machine(object):
 		self.geo_lat = 0
 		self.geo_long = 0
 		self.geo_accuracy = 0
-
 
 #Return a list of "crackable" networks within an airodump-ng xml dump
 	def crackables(self): 
@@ -151,7 +149,7 @@ class xml_machine(object):
 ##writes xml object to file
 #requires string for output file destination/name
 	def xml_write(self, output_xml):
-		print "Writing XML to file:", output_xml
+		#print "Writing XML to file:", output_xml
 		self.tree.write(output_xml)
 
 ####TESTS####

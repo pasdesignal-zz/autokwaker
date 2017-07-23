@@ -22,12 +22,7 @@ from xml_arse import xml_machine
 from geolocate_api import buildJson, geolocate
 from termcolor import colored #requires: pip install termcolor
 
-#testes = "testes12345"
-#print colored("result:", 'green'), colored(testes, 'green')
-
 ####improvements:
-####
-###Have pyrit dynamically parse HS PCAPs as they are gathered....
 #
 ##create temp folders automatically and clean up when finished
 #
@@ -39,9 +34,9 @@ from termcolor import colored #requires: pip install termcolor
 #
 ##Add args feature to alter things like scan time for initial general scan loop or to rescan previously failed APs
 #
-#"ignore list of previous APs" should be selectable at cmd line avriable - almost there... can accept command line variables now
+#"ignore list of previous APs" should be selectable at cmd line variable - almost there... can accept command line variables now
 #
-##accept ignore list as comma seperated list
+##Accept ignore list as comma seperated list
 #
 ##Test that the wifi adaptors are setup correctly
 #
@@ -76,7 +71,7 @@ def parse_args(argv):
       sys.exit(2)
    for opt, arg in opts:
       if opt == '-h':
-         print 'auto_crack_main.py -i <"ignore APs list"> -t <(tidy) "y" or "n">'
+         print 'auto_crack_main.py -i <"ignore APs list"> -t <(tidy) "y" or "n"> -s <"seconds to scan before attacking">'
          sys.exit()
       elif opt in ("-i", "--ignore"):
          ignore = arg
@@ -378,8 +373,6 @@ if __name__ == '__main__':
 															os.remove(handshake_dir+file)        
 														except OSError:
 															pass
-											
-
 #time-out in case no handshakes are captured
 ##make this option (length in seconds) controllable via args???			
 							if f_scanning == True:
