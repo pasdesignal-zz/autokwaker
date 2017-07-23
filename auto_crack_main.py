@@ -363,7 +363,7 @@ if __name__ == '__main__':
 											print colored("Deleting PCAP because no handshake found:", 'red')
 											for files in files_handshake:
 												if 'GODD' not in file:
-												os.remove(file)
+													os.remove(file)
 											
 
 #time-out in case no handshakes are captured
