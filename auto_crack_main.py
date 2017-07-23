@@ -316,6 +316,8 @@ if __name__ == '__main__':
 							time.sleep(10)
 							if deauth == True:
 								files_handshake = os.listdir(handshake_dir)
+								print colored("DEBUG: files in HS folder:", 'red')   #debug
+								print colored(files_handshake, 'red')                #debug
 								for files in files_handshake:		
 #scan pcap file for valid handshake EAPOL packets
 									handshake_file = (handshake_dir+files)
@@ -350,6 +352,8 @@ if __name__ == '__main__':
 											break
 										else:
 											#delete pcap file and continue
+											print colored("Deleting PCAP because no handshake found:", 'red')
+											print colored(handshake_file, 'red')
 											os.remove(handshake_file)
 
 #time-out in case no handshakes are captured

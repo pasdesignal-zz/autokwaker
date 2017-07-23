@@ -48,7 +48,7 @@ class scanner(object):
 				scanning = conn.recv() 			#control from main
 				#print "airodump child scanning:", scanning			#debug
 				if scanning == False:
-					#print "Attempting to kill process scan"		#debug
+					print colored("Attempting to kill process scan airodump-ng", 'red')	#debug
 					conn.close()
 					self.send_interrupt()	
 					break	
