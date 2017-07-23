@@ -15,7 +15,7 @@ class scanner(object):
 		self.iface = iface
 
 #Set channel to avoid the wrong channel error....
-	def set_channel(self, channel):
+	def iface_reset(self, channel):
 		self.cmd = ['airmon-ng']
 		self.cmd.extend (['stop',			#only report attached clients
 			str(self.iface)],)					
@@ -30,8 +30,7 @@ class scanner(object):
 		self.cmd.extend (['start',			#only report attached clients
 			str(self.iface)])					
 		if channel != 0:
-			self.cmd.append(str(channel))
-		self.cmd.append('check kill')	
+			self.cmd.append(str(channel))	
 		print colored("Airmon-ng command:", 'magenta', 'on_cyan')
 		print colored(self.cmd, 'magenta', 'on_cyan')	
 		print colored(self.cmd, 'magenta', 'on_cyan')

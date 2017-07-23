@@ -49,8 +49,10 @@ from termcolor import colored #requires: pip install termcolor
 
 #Dev null variable for subprocesses
 DN = open(os.devnull, 'w')
+
 #wifi interface that is in monitor mode
 iface = 'wlan1mon'
+
 #file locations 
 ##These should be improved to be located in temp files and then cleaned up afterwards
 target_dir = '/home/odroid/targets/'
@@ -304,7 +306,7 @@ if __name__ == '__main__':
 						'client_MAC':(f_xml.client_list),	#expects a list
 						'conn':deauth_child_conn})
 #start airodump-ng process - focussed this time. Captures any 4 way hadnshakes.
-						f_scanner.set_channel(f_xml.channel)
+						f_scanner.iface_reset(f_xml.channel)
 						f_airodump.start()
 #start aireplay-ng process with deauth method. Deauths clients to force handshaking procedure.
 						f_deauth.start()
