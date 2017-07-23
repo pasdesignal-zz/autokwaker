@@ -240,7 +240,7 @@ if __name__ == '__main__':
 			'out_format':'netxml', 
 			'out_dest':output_dir, 
 			'conn':airodump_child_conn,
-			'interval':'20'})								#This interval should be configurable by cmd line variable
+			'interval': secs_arg})								#This interval should be configurable by cmd line variable
 			#print  "Creating process for folder watch"
 			observer = Observer()							#folder watchdog process to monitor outputxml from airodump-ng
 			observer.schedule(MyHandler(), path=output_dir)
@@ -255,7 +255,7 @@ if __name__ == '__main__':
 				airodump_parent_conn.send(scanning)
 				print "General scan now running for: %.0f seconds" % (time.time() - time_started)
 				file_list = os.listdir(target_dir)
-				if time.time() - time_started >= secs_arg:
+				if time.time() - time_started >= 9999:
 					print "Times up, aborting general scan..."	
 					scanning = False
 				if file_list != []:
