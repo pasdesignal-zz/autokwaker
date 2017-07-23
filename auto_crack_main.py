@@ -331,9 +331,10 @@ if __name__ == '__main__':
 										capfile=(handshake_dir+valid.SSID+'_strip.cap'))
 										strip_valid.validate_handshake()
 										strip_valid.analyze()
-										print colored("Validation result of stripped handshake capture:", 'red') 
+										print colored("Validation (cowpatty) result of stripped handshake capture:", 'red') 
 										print colored(strip_valid.validation_result, 'red')
-										print colored("Analysis result of stripped handshake capture:", strip_valid.analyze_result
+										print colored("Analysis (pyrit) result of stripped handshake capture:", 'red')
+										print colored(strip_valid.analyze_result, 'red')
 #when handshake detected stop focussed attack			
 										if strip_valid.validation_result or strip_valid.analyze_result == True:			
 											print colored("Handshake captured, my job here is done...", 'cyan', 'on_magenta') 
