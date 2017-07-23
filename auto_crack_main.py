@@ -310,8 +310,8 @@ if __name__ == '__main__':
 						time_started = time.time()
 						f_scanning = True
 						while f_scanning == True:
-							print colored("sending restart message....", 'red') #necessary for now to delete pcap file
-							f_airodump_parent_conn.send("restart")
+							#print colored("sending restart message....", 'red') #necessary for now to delete pcap file
+							#f_airodump_parent_conn.send("restart")
 							time.sleep(1)
 							f_airodump_parent_conn.send(f_scanning)
 							deauth_parent_conn.send(f_scanning)
@@ -359,9 +359,11 @@ if __name__ == '__main__':
 											break
 										else:
 											#delete pcap file and continue
+											#this needs to delete all files except "GOOD" files
 											print colored("Deleting PCAP because no handshake found:", 'red')
-											print colored(handshake_file, 'red')
-											os.remove(handshake_file)
+											for files in files_handshake:
+												if 'GODD' not in file:
+												os.remove(file)
 											
 
 #time-out in case no handshakes are captured
