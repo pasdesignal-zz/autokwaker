@@ -10,6 +10,8 @@ import requests
 import json
 import sys
 import getopt
+import argparse
+import logging
 import xml.etree.cElementTree as ET
 from subprocess import Popen, call, PIPE
 from signal import SIGINT, SIGTERM
@@ -66,7 +68,7 @@ def parse_args(argv):
 	secs = 30
 	per = False
 	try:
-		opts, args = getopt.getopt(argv,"hi:t:s:p",["ignore=","_tidy=","secs="])
+		opts, args = getopt.getopt(argv,"vphi:t:s:",["ignore=","_tidy=","secs="])
 	except getopt.GetoptError:
 		print 'auto_crack_main.py -i <"ignore APs list"> -t <delete working files automatically "y" or "n"> -s <"seconds"> -p <persistent mode>'
 		sys.exit(2)
@@ -81,10 +83,13 @@ def parse_args(argv):
 		elif opt in ("-s", "--secs"):
 			secs = arg
 		elif opt == '-p':
-			per = True     
+			per = True
+		elif opt == '-v':
+			logging.basicConfig(level=logging.DEBUG)	     
 	return ignore, _tidy, secs, per
 
 ignore_arg, tidy_arg, secs_arg, per_arg = parse_args(sys.argv[1:])
+logging.debug('Only shown in debug mode')
 
 class MyHandler(PatternMatchingEventHandler):
 	
