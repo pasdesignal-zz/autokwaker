@@ -353,14 +353,14 @@ if __name__ == '__main__':
 											#
 											#strip pcap file here if you have to...
 											print colored("Stripping handshake PCAP file of unnecessary packets:", 'red')
-											print colored(handshake_file, 'red')
-											valid.strip(handshake_file)
+											print colored(handshake_dir+valid.SSID+'_GOOD.cap', 'red')
+											valid.strip(handshake_dir+valid.SSID+'_GOOD.cap')
 											print colored("Validating stripped PCAP file...", 'yellow')
 											strip_valid = validator(SSID=(f_xml.name), 
 											BSSID=(f_xml.bssid), 
-											capfile=(handshake_file+'_strip'))
+											capfile=(handshake_dir+valid.SSID+'_GOOD'+'_strip.cap'))
 											print colored("Deleting source PCAP file...", 'red')
-											os.remove(handshake_file)
+											os.remove(handshake_dir+valid.SSID+'_GOOD.cap')
 											break
 										else:
 											#delete pcap file and continue
