@@ -325,10 +325,7 @@ if __name__ == '__main__':
 								for files in files_handshake:		
 #scan pcap file for valid handshake EAPOL packets
 									handshake_file = (handshake_dir+files)
-									print "HANDSHAKE_FILE:", handshake_file
-									#if handshake_file == (handshake_dir+f_xml.name+"_scan-01.cap"):     
 									if (handshake_dir+f_xml.name+"_scan") in handshake_file:
-										print "IN comparator works..."
 										valid = validator(SSID=(f_xml.name), 
 										BSSID=(f_xml.bssid), 
 										capfile=(handshake_file))
@@ -370,8 +367,8 @@ if __name__ == '__main__':
 													good_test = file_string.find("GOOD")
 													if good_test == -1:
 														try:
-															print "renaming useless handshake file:", (handshake_dir+file)
-															os.rename((handshake_dir+file), (handshake_dir+file+'_BAD'))        
+															print "Deleting useless handshake file:", (handshake_dir+file)
+															os.remove(handshake_dir+file)        
 														except OSError:
 															pass
 											
