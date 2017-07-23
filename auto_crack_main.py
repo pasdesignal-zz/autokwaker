@@ -202,11 +202,10 @@ def sort_by_power(location):
 
 def create_ignore_list():
 	ignore_list = ['petonehappinessclub', 'SETUP', ignore_arg]
-	#if per_arg == False:
 	for ignore in glob.iglob(target_dir+"*.xml"):
 		ignore_xml = xml_machine(ignore)
 		ignore_xml.parse_deets()
-		if str(ignore_xml.cracked) == 'Cracked':
+		if str(ignore_xml.cracked) == 'True':
 			ignore_list.append(ignore_xml.name)
 		else:
 			if per_arg == False:
@@ -214,9 +213,6 @@ def create_ignore_list():
 					ignore_list.append(ignore_xml.name)	
 	print "ignore_list:", ignore_list       
 	return ignore_list
-	#else:
-	#	print "Ignore list bypassed due to persistence mode selected"
-	#	return ignore_list
 
 #uses googles geo-location API
 def geo_locate(bssid, strength, ratio):
