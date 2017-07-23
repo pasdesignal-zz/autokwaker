@@ -362,8 +362,9 @@ if __name__ == '__main__':
 											#this needs to delete all files except "GOOD" files
 											print colored("Deleting PCAP because no handshake found:", 'red')
 											for files in files_handshake:
-												if 'GODD' not in file:
-													os.remove(file)
+												file_del = str(handshake_dir+files)
+												if 'GOOD' not in file_del:
+													os.remove(file_del)
 											
 
 #time-out in case no handshakes are captured
