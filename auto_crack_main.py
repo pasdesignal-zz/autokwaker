@@ -63,7 +63,7 @@ cracked_dir = 'home/odroid/cracked/'
 def parse_args(argv):
    ignore = ''
    _tidy = ''
-   secs = ''
+   secs = 30
    try:
       opts, args = getopt.getopt(argv,"hi:t:s:",["ignore=","_tidy=","secs="])
    except getopt.GetoptError:
@@ -81,8 +81,8 @@ def parse_args(argv):
          secs = arg   
    return ignore, _tidy, secs
 
-secs_arg = 30
 ignore_arg, tidy_arg, secs_arg = parse_args(sys.argv[1:])
+print "SECS:", secs_arg
 
 class MyHandler(PatternMatchingEventHandler):
 	
