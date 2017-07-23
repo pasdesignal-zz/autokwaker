@@ -344,7 +344,7 @@ if __name__ == '__main__':
 										print colored(valid.validation_result, 'red')
 										print colored("Analysis (pyrit) result of handshake capture:", 'red')
 										print colored(valid.analyze_result, 'red')
-										handshake_count = 1
+										handshake_count = (handshake_count+1)
 #when handshake detected stop focussed attack			
 										if valid.validation_result or valid.analyze_result == True:			
 											print colored("Handshake captured, my job here is done...", 'cyan', 'on_magenta') 
