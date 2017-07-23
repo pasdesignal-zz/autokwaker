@@ -357,7 +357,7 @@ if __name__ == '__main__':
 											time.sleep(1)											
 											os.rename(valid.capfile, (handshake_dir+valid.SSID+'_GOOD.cap'))   #untested
 											break
-										else:
+										#else:
 											#delete pcap file and continue
 											#this needs to delete all files except "GOOD" files
 											#print colored("Deleting PCAP because no handshake found:", 'red')
