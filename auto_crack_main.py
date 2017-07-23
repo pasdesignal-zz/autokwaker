@@ -213,6 +213,7 @@ def create_ignore_list():
 		return ignore_list
 	else:
 		print "Ignore list bypassed due to persistence mode selected"
+		return ignore_list
 
 #uses googles geo-location API
 def geo_locate(bssid, strength, ratio):
