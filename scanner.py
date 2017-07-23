@@ -18,15 +18,18 @@ class scanner(object):
 	def set_channel(self, channel):
 		self.cmd = ['airmon-ng']
 		self.cmd.extend (['stop',			#only report attached clients
-			str(self.iface)])					
+			str(self.iface)],)					
+		print colored("Airmon-ng command:", 'magenta', 'on_cyan')
+		print colored(self.cmd, 'magenta', 'on_cyan')
 		self.proc = Popen(self.cmd, stdout=self.DN, stderr=self.DN)
-		time.sleep(10)
 		print "WAITING READING ETC"
+		time.sleep(10)
 		self.cmd = ['airmon-ng']
 		self.cmd.extend (['start',			#only report attached clients
 			str(self.iface)])					
 		if channel != 0:
 			self.cmd.append(str(channel))
+		self.cmd.append('check kill')	
 		print colored("Airmon-ng command:", 'magenta', 'on_cyan')
 		print colored(self.cmd, 'magenta', 'on_cyan')	
 		self.proc = Popen(self.cmd, stdout=self.DN, stderr=self.DN)

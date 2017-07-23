@@ -304,8 +304,6 @@ if __name__ == '__main__':
 						'client_MAC':(f_xml.client_list),	#expects a list
 						'conn':deauth_child_conn})
 #start airodump-ng process - focussed this time. Captures any 4 way hadnshakes.
-						print colored("DEBUG f_xml.channel:", 'red')
-						print colored(f_xml.channel, 'red')
 						f_scanner.set_channel(f_xml.channel)
 						f_airodump.start()
 #start aireplay-ng process with deauth method. Deauths clients to force handshaking procedure.
