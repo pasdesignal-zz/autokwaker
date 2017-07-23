@@ -355,9 +355,8 @@ if __name__ == '__main__':
 											print colored("Deleting PCAP because no handshake found:", 'red')
 											print colored(handshake_file, 'red')
 											os.remove(handshake_file)
-											print colored("sending restar message....", 'red')
-											f_scanning = "restart"
-											f_airodump_parent_conn.send(f_scanning)
+											print colored("sending restart message....", 'red')
+											f_airodump_parent_conn.send("restart")
 
 #time-out in case no handshakes are captured
 ##make this option (length in seconds) controllable via args???			
