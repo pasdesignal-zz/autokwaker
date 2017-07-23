@@ -27,7 +27,7 @@ class scanner(object):
 		call('iwconfig')
 		self.cmd = ['airmon-ng']
 		self.cmd.extend (['start',			#only report attached clients
-			wlan1])					
+			'wlan1'])					
 		if channel != 0:
 			self.cmd.append(str(channel))	
 		print colored("Airmon-ng command:", 'magenta', 'on_cyan')
