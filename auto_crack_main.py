@@ -327,7 +327,7 @@ if __name__ == '__main__':
 									print "HANDSHAKE_FILE:", handshake_file
 									#if handshake_file == (handshake_dir+f_xml.name+"_scan-01.cap"):     
 									if (handshake_dir+f_xml.name+"_scan") in handshake_file:
-										print (handshake_dir+f_xml.name+'_scan') "in HANDSHAKE_FILE:", handshake_file
+										print((handshake_dir+f_xml.name+'_scan') "in HANDSHAKE_FILE:", handshake_file)
 										valid = validator(SSID=(f_xml.name), 
 										BSSID=(f_xml.bssid), 
 										capfile=(handshake_file))
