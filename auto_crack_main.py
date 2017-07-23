@@ -66,7 +66,7 @@ def parse_args(argv):
    	secs = 30
    	per = False
    	try:
-      	opts, args = getopt.getopt(argv,"hi:t:s:p",["ignore=","_tidy=","secs="])
+   		opts, args = getopt.getopt(argv,"hi:t:s:p",["ignore=","_tidy=","secs="])
    	except getopt.GetoptError:
      	print 'auto_crack_main.py -i <"ignore APs list"> -t <delete working files automatically "y" or "n"> -s <"seconds">'
       	sys.exit(2)
