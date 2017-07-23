@@ -27,7 +27,7 @@ from termcolor import colored #requires: pip install termcolor
 
 ####improvements:
 ####
-###Add commenting
+###Have pyrit dynamically parse HS PCAPs as they are gathered....
 #
 ##create temp folders automatically and clean up when finished
 #

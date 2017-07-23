@@ -55,7 +55,7 @@ class scanner(object):
 				if scanning == "restart":     #experimental
 					print colored("DEBUG: restart received", 'red')
 					self.send_interrupt()     #experimental
-					time.sleep(1)            #experimental
+					#time.sleep(1)            #experimental
 					self.proc = Popen(self.cmd, stdout=self.DN, stderr=self.DN)    #experimental
 
 		except KeyboardInterrupt:
@@ -94,7 +94,7 @@ class scanner(object):
 					
 # Sends interrupt signal to process
 	def send_interrupt(self):
-		#print "attempting to kill process:", self.proc.pid		#debug
+		print colored("attempting to kill process:", 'red'), colored(self.proc.pid, 'red')		#debug
 		try:
 			self.proc.terminate()
 		except EnvironmentError:
