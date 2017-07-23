@@ -5,6 +5,7 @@ import os
 import signal
 from subprocess import Popen
 from multiprocessing import Process, Pipe
+from termcolor import colored #requires: pip install termcolor
 
 class scanner(object):
 #Dev null variable for subprocesses 
@@ -38,8 +39,8 @@ class scanner(object):
 			self.cmd.append('--bssid')
 			self.cmd.append(str(bssid))
 		self.cmd.append(self.iface)
-		#print "Starting process airodump-ng"				#debug
-		#print "Using command:", self.cmd 					#debug
+		print colored("Starting process airodump-ng", 'red')				#debug
+		print colored("Using command:", 'red'), colored(self.cmd, 'red') 					#debug
 		self.proc = Popen(self.cmd, stdout=self.DN, stderr=self.DN)
 		try:
 			while True:

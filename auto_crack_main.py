@@ -233,25 +233,25 @@ if __name__ == '__main__':
 	try:
 		while True:
 			tidy()
-			print "Creating general scanner object"
+			#print "Creating general scanner object"
 			g_scanner = scanner(iface)
 			#print "g_scanner:", g_scanner					#debug
-			print "Creating pipe for general scan"			#Pipes for control of external application processes
+			#print "Creating pipe for general scan"			#Pipes for control of external application processes
 			airodump_parent_conn, airodump_child_conn = Pipe()
-			print "Creating process for general scan"
+			#print "Creating process for general scan"
 			airodump = Process(target=g_scanner.scan, kwargs={
 			'out_format':'netxml', 
 			'out_dest':output_dir, 
 			'conn':airodump_child_conn,
 			'interval':'20'})								#This interval should be configurable by cmd line variable
-			print  "Creating process for folder watch"
+			#print  "Creating process for folder watch"
 			observer = Observer()							#folder watchdog process to monitor outputxml from airodump-ng
 			observer.schedule(MyHandler(), path=output_dir)
 			airodump.start()
 			scanning = True
 			time_started = time.time()
 			#print "time_started:%.0f" % time_started			#debug
-			print "Starting folder watchdog..."
+			print colored("Starting folder watchdog...", 'green')
 			observer.start()
 			while scanning == True:
 				time.sleep(1)
@@ -287,7 +287,7 @@ if __name__ == '__main__':
 					f_xml.parse_deets()		
 					if str(f_xml.cracked) == "False":					#Test if AP has already been cracked	
 #start airodump-ng focussed attack using deets parsed from xml
-						print "Creating focussed scanner object:", f_xml.name
+						print colored("Creating focussed scanner object:", 'green'), colored(f_xml.name, 'green')
 						f_scanner = scanner(iface)
 						#print "f_scanner:", f_scanner					#debug
 						f_airodump_parent_conn, f_airodump_child_conn = Pipe()
