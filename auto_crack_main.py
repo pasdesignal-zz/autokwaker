@@ -310,6 +310,8 @@ if __name__ == '__main__':
 						time_started = time.time()
 						f_scanning = True
 						while f_scanning == True:
+							print colored("sending restart message....", 'red') #necessary for now to delete pcap file
+							f_airodump_parent_conn.send("restart")
 							f_airodump_parent_conn.send(f_scanning)
 							deauth_parent_conn.send(f_scanning)
 							deauth = deauth_parent_conn.recv()
@@ -349,15 +351,14 @@ if __name__ == '__main__':
 											f_airodump_parent_conn.close()
 											deauth_parent_conn.close()
 											time.sleep(1)											
-											os.rename(valid.capfile, (handshake_dir+valid.SSID+'_GOOD.cap'))
+											os.rename(valid.capfile, (handshake_dir+valid.SSID+'_GOOD.cap'))   #untested
 											break
 										else:
 											#delete pcap file and continue
 											print colored("Deleting PCAP because no handshake found:", 'red')
 											print colored(handshake_file, 'red')
 											os.remove(handshake_file)
-											print colored("sending restart message....", 'red')
-											f_airodump_parent_conn.send("restart")
+											
 
 #time-out in case no handshakes are captured
 ##make this option (length in seconds) controllable via args???			
