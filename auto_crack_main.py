@@ -312,10 +312,11 @@ if __name__ == '__main__':
 						while f_scanning == True:
 							print colored("sending restart message....", 'red') #necessary for now to delete pcap file
 							f_airodump_parent_conn.send("restart")
+							time.sleep(1)
 							f_airodump_parent_conn.send(f_scanning)
 							deauth_parent_conn.send(f_scanning)
 							deauth = deauth_parent_conn.recv()
-							time.sleep(10)
+							time.sleep(8)
 							if deauth == True:
 								files_handshake = os.listdir(handshake_dir)
 								print colored("DEBUG: files in HS folder:", 'red')   #debug
@@ -323,7 +324,10 @@ if __name__ == '__main__':
 								for files in files_handshake:		
 #scan pcap file for valid handshake EAPOL packets
 									handshake_file = (handshake_dir+files)
-									if handshake_file == (handshake_dir+f_xml.name+"_scan-01.cap"):     
+									print "HANDSHAKE_FILE:", handshake_file
+									#if handshake_file == (handshake_dir+f_xml.name+"_scan-01.cap"):     
+									if (handshake_dir+f_xml.name+"_scan") in handshake_file:
+										print (handshake_dir+f_xml.name+'_scan') "in HANDSHAKE_FILE:", handshake_file
 										valid = validator(SSID=(f_xml.name), 
 										BSSID=(f_xml.bssid), 
 										capfile=(handshake_file))

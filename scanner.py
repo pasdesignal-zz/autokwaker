@@ -16,6 +16,7 @@ class scanner(object):
 
 #scan looking for likely networks
 #when suitable target networks detected - stop scan
+####is it worth manually setting iface to appropriate mon channel here? (to avoid channel error)????
 	def scan(self, out_format='', out_dest='', interval=10, channel=0, essid=0, bssid=0, conn=0):
 		#print "Creating command line for scanning process"			#debug
 		self.cmd = ['airodump-ng']
@@ -46,7 +47,7 @@ class scanner(object):
 			while True:
 				time.sleep(1)
 				scanning = conn.recv() 			#control from main
-				print "airodump child scanning:", scanning			#debug
+				#print "airodump child scanning:", scanning			#debug
 				if scanning == False:
 					print colored("Attempting to kill process scan airodump-ng", 'red')	#debug
 					conn.close()
