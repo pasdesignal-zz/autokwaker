@@ -39,7 +39,7 @@ class scanner(object):
 			self.cmd.append('--bssid')
 			self.cmd.append(str(bssid))
 		self.cmd.append(self.iface)
-		print colored("Starting process airodump-ng", 'red')				#debug
+		print colored("Starting scanning process airodump-ng", 'red')				#debug
 		print colored("Using command:", 'red'), colored(self.cmd, 'red') 					#debug
 		self.proc = Popen(self.cmd, stdout=self.DN, stderr=self.DN)
 		try:
@@ -56,6 +56,8 @@ class scanner(object):
 					print colored("DEBUG: restart received", 'red')
 					self.send_interrupt()     #experimental
 					#time.sleep(1)            #experimental
+					print colored("Starting scanning process airodump-ng", 'red')				#debug
+					print colored("Using command:", 'red'), colored(self.cmd, 'red') 					#debug
 					self.proc = Popen(self.cmd, stdout=self.DN, stderr=self.DN)    #experimental
 
 		except KeyboardInterrupt:
