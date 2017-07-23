@@ -62,16 +62,17 @@ cracked_dir = 'home/odroid/cracked/'
 #parse command line arguments here
 def parse_args(argv):
    ignore = ''
-   _tidy = ''
+   _tidy = 'y'
    secs = 30
    try:
       opts, args = getopt.getopt(argv,"hi:t:s:",["ignore=","_tidy=","secs="])
    except getopt.GetoptError:
-      print 'auto_crack_main.py -i <"ignore APs list"> -t <(tidy) "y" or "n"> -s <"seconds">'
+      print 'auto_crack_main.py -i <"ignore APs list"> -t <delete working files automatically "y" or "n"> -s <"seconds">'
       sys.exit(2)
    for opt, arg in opts:
       if opt == '-h':
-         print 'auto_crack_main.py -i <"ignore APs list"> -t <(tidy) "y" or "n"> -s <"seconds to scan before attacking">'
+         print 'auto_crack_main.py -i <"ignore APs list"> -t <(tidy) "y" or "n"> -s <"seconds to refresh scan file. \
+         Faster = less chance of a suitable AP being discovered. Default=20secs.">'
          sys.exit()
       elif opt in ("-i", "--ignore"):
          ignore = arg
