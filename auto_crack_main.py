@@ -361,16 +361,16 @@ if __name__ == '__main__':
 											#delete pcap file and continue
 											#this needs to delete all files except "GOOD" files
 											#print colored("Deleting PCAP because no handshake found:", 'red')
-											for file in  files_handshake:
+											#for file in  files_handshake:
 											#test for filename without word "strip" in it 
-												file_string = str(file)
-												good_test = file_string.find("GOOD")
-												if good_test == -1:
-													try:
-														print "renaming useless handshake file:", (handshake_dir+file)
-														os.rename((handshake_dir+file), (handshake_dir+file+'_BAD'))        
-													except OSError:
-														pass
+											#	file_string = str(file)
+											#	good_test = file_string.find("GOOD")
+											#	if good_test == -1:
+											#		try:
+											#			print "renaming useless handshake file:", (handshake_dir+file)
+											#			os.rename((handshake_dir+file), (handshake_dir+file+'_BAD'))        
+											#		except OSError:
+											#			pass
 											
 
 #time-out in case no handshakes are captured
