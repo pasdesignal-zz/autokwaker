@@ -3,7 +3,7 @@
 import time
 import os
 import signal
-from subprocess import Popen
+from subprocess import Popen, call
 from multiprocessing import Process, Pipe
 from termcolor import colored #requires: pip install termcolor
 
@@ -21,7 +21,7 @@ class scanner(object):
 			str(self.iface)],)					
 		print colored("Airmon-ng command:", 'magenta', 'on_cyan')
 		print colored(self.cmd, 'magenta', 'on_cyan')
-		self.proc = Popen(self.cmd, stdout=self.DN, stderr=self.DN)
+		subprocess.call(self.cmd)
 		print "WAITING READING ETC"
 		time.sleep(10)
 		self.cmd = ['airmon-ng']
@@ -32,9 +32,11 @@ class scanner(object):
 		self.cmd.append('check kill')	
 		print colored("Airmon-ng command:", 'magenta', 'on_cyan')
 		print colored(self.cmd, 'magenta', 'on_cyan')	
-		self.proc = Popen(self.cmd, stdout=self.DN, stderr=self.DN)
-		time.sleep(10)
+		print colored(self.cmd, 'magenta', 'on_cyan')
+		subprocess.call(self.cmd)
 		print "WAITING READING ETC....."
+		time.sleep(10)
+		
 
 #scan looking for likely networks
 #when suitable target networks detected - stop scan
