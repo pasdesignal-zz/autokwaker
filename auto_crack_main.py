@@ -309,6 +309,7 @@ if __name__ == '__main__':
 						f_deauth.start()
 						time_started = time.time()
 						f_scanning = True
+						handshake_count = 0
 						while f_scanning == True:
 							#print colored("sending restart message....", 'red') #necessary for now to delete pcap file
 							#f_airodump_parent_conn.send("restart")
@@ -343,6 +344,7 @@ if __name__ == '__main__':
 										print colored(valid.validation_result, 'red')
 										print colored("Analysis (pyrit) result of handshake capture:", 'red')
 										print colored(valid.analyze_result, 'red')
+										handshake_count = 1
 #when handshake detected stop focussed attack			
 										if valid.validation_result or valid.analyze_result == True:			
 											print colored("Handshake captured, my job here is done...", 'cyan', 'on_magenta') 
@@ -357,20 +359,21 @@ if __name__ == '__main__':
 											time.sleep(1)											
 											os.rename(valid.capfile, (handshake_dir+valid.SSID+'_GOOD.cap'))   #untested
 											break
-										#else:
+										else:
 											#delete pcap file and continue
 											#this needs to delete all files except "GOOD" files
 											#print colored("Deleting PCAP because no handshake found:", 'red')
-											#for file in  files_handshake:
-											#test for filename without word "strip" in it 
-											#	file_string = str(file)
-											#	good_test = file_string.find("GOOD")
-											#	if good_test == -1:
-											#		try:
-											#			print "renaming useless handshake file:", (handshake_dir+file)
-											#			os.rename((handshake_dir+file), (handshake_dir+file+'_BAD'))        
-											#		except OSError:
-											#			pass
+											if handshake_count >= 3:
+												for file in  files_handshake:
+												test for filename without word "strip" in it 
+													file_string = str(file)
+													good_test = file_string.find("GOOD")
+													if good_test == -1:
+														try:
+															print "renaming useless handshake file:", (handshake_dir+file)
+															os.rename((handshake_dir+file), (handshake_dir+file+'_BAD'))        
+														except OSError:
+															pass
 											
 
 #time-out in case no handshakes are captured
