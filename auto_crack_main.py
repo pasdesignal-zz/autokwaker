@@ -65,7 +65,7 @@ def parse_args(argv):
    _tidy = ''
    secs = ''
    try:
-      opts, args = getopt.getopt(argv,"hi:t:",["ignore=","_tidy=","secs="])
+      opts, args = getopt.getopt(argv,"hi:t:s:",["ignore=","_tidy=","secs="])
    except getopt.GetoptError:
       print 'auto_crack_main.py -i <"ignore APs list"> -t <(tidy) "y" or "n"> -s <"seconds">'
       sys.exit(2)
