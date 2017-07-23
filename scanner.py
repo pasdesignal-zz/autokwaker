@@ -22,8 +22,10 @@ class scanner(object):
 		print colored("Airmon-ng command:", 'magenta', 'on_cyan')
 		print colored(self.cmd, 'magenta', 'on_cyan')
 		subprocess.call(self.cmd)
+		time.sleep(2)
+		subprocess.call('ifconfig wlan1 down')
 		print "WAITING READING ETC"
-		time.sleep(10)
+		time.sleep(5)
 		self.cmd = ['airmon-ng']
 		self.cmd.extend (['start',			#only report attached clients
 			str(self.iface)])					
@@ -35,7 +37,7 @@ class scanner(object):
 		print colored(self.cmd, 'magenta', 'on_cyan')
 		subprocess.call(self.cmd)
 		print "WAITING READING ETC....."
-		time.sleep(10)
+		time.sleep(5)
 		
 
 #scan looking for likely networks
