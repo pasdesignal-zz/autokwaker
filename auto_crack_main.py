@@ -325,20 +325,20 @@ if __name__ == '__main__':
 										valid = validator(SSID=(f_xml.name), 
 										BSSID=(f_xml.bssid), 
 										capfile=(handshake_file))
-										print colored("Stripping handshake cap file of unnecessary packets", 'red')
-										valid.strip(handshake_dir+valid.SSID+'_strip.cap')
-										print colored("Validating stripped cap file...", 'yellow')
-										strip_valid = validator(SSID=(f_xml.name), 
-										BSSID=(f_xml.bssid), 
-										capfile=(handshake_dir+valid.SSID+'_strip.cap'))
-										strip_valid.validate_handshake()
-										strip_valid.analyze()
-										print colored("Validation (cowpatty) result of stripped handshake capture:", 'red') 
-										print colored(strip_valid.validation_result, 'red')
-										print colored("Analysis (pyrit) result of stripped handshake capture:", 'red')
-										print colored(strip_valid.analyze_result, 'red')
+										#print colored("Stripping handshake cap file of unnecessary packets", 'red')
+										#valid.strip(handshake_dir+valid.SSID+'_strip.cap')
+										#print colored("Validating stripped cap file...", 'yellow')
+										#strip_valid = validator(SSID=(f_xml.name), 
+										#BSSID=(f_xml.bssid), 
+										#capfile=(handshake_dir+valid.SSID+'_strip.cap'))
+										valid.validate_handshake()
+										valid.analyze()
+										print colored("Validation (cowpatty) result of handshake capture:", 'red') 
+										print colored(valid.validation_result, 'red')
+										print colored("Analysis (pyrit) result of handshake capture:", 'red')
+										print colored(valid.analyze_result, 'red')
 #when handshake detected stop focussed attack			
-										if strip_valid.validation_result or strip_valid.analyze_result == True:			
+										if valid.validation_result or valid.analyze_result == True:			
 											print colored("Handshake captured, my job here is done...", 'cyan', 'on_magenta') 
 											f_xml.cracked = 'True'
 											f_xml.xml_tree()
@@ -349,6 +349,7 @@ if __name__ == '__main__':
 											f_airodump_parent_conn.close()
 											deauth_parent_conn.close()
 											time.sleep(1)											
+											os.rename(valid.capfile, (handshake_dir+valid.SSID+'_GOOD.cap'))
 											break
 										else:
 											#delete pcap file and continue
