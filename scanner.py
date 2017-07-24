@@ -13,6 +13,8 @@ class scanner(object):
 
 	def __init__(self, iface):
 		self.iface = iface
+		self.start_time = time.time()
+		self.state = False
 
 #Set channel to avoid the wrong channel error....
 	def set_channel(self, channel):

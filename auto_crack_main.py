@@ -94,6 +94,7 @@ def parse_args(argv):
 ignore_arg, tidy_arg, secs_arg, per_arg, recon_arg = parse_args(sys.argv[1:])
 logging.debug('Only shown in debug mode')
 print("Recon:", recon_arg)
+print("Persistent mode:", per_arg)
 
 class MyHandler(PatternMatchingEventHandler):
 	
@@ -260,19 +261,20 @@ if __name__ == '__main__':
 			observer = Observer()                           #folder watchdog process to monitor outputxml from airodump-ng
 			observer.schedule(MyHandler(), path=output_dir)
 			airodump.start()
-			scanning = True
-			time_started = time.time()
+			g_scanner.state = True
+			#scanning = True
 			#print "time_started:%.0f" % time_started           #debug
 			print colored("Starting folder watchdog...", 'green')
 			observer.start()
-			while scanning == True:
+			while g_scanner.state == True:
 				time.sleep(1)
 				airodump_parent_conn.send(scanning)
 				print "General scan now running for: %.0f seconds" % (time.time() - time_started)
 				file_list = os.listdir(target_dir)
-				if time.time() - time_started >= 9999:
+				if time.time() - g_scanner.start_time >= 9999:
 					print "Times up, aborting general scan..."  
-					scanning = False
+					g_scanner.state = False
+					#scanning = False
 				if file_list != []:
 #test for APs that havent previously been cracked/timed-out
 					for _file in file_list:
@@ -280,8 +282,15 @@ if __name__ == '__main__':
 						_xml.parse_deets()
 						if str(_xml.cracked) == 'False':
 							print colored("Targets detected, aborting general scan...", 'green')
-							scanning = False
-							break      
+							g_scanner.state = False
+							#scanning = False
+							break
+#also test for Timeout APs if using persistent mode							
+						if str(_xml.cracked) == 'Timeout' and per_arg == True:
+							print colored("Targets detected, aborting general scan...", 'green')
+							g_scanner.state = False
+							#scanning = False
+							break		      
 			observer.stop()     
 			airodump_parent_conn.send(scanning)
 			airodump_parent_conn.close()
@@ -297,7 +306,7 @@ if __name__ == '__main__':
 					#print "target_dir+file:", (target_dir+file)        #debug
 					f_xml = xml_machine(target_dir+AP[0]+".xml")
 					f_xml.parse_deets()     
-					if f_xml.cracked != True:        #Test if AP has already been cracked    
+					if f_xml.cracked != 'True':        #Test if AP has already been cracked    
 #start airodump-ng focussed attack using deets parsed from xml
 						print ("!!!!!! f_xml.cracked not True:", f_xml.cracked)
 						print colored("Creating focussed scanner object:", 'green'), colored(f_xml.name, 'green')
@@ -321,15 +330,15 @@ if __name__ == '__main__':
 						f_airodump.start()
 #start aireplay-ng process with deauth method. Deauths clients to force handshaking procedure.
 						f_deauth.start()
-						time_started = time.time()
+						#time_started = time.time()
+						f_scanner.state = True
 						f_scanning = True
 						handshake_count = 0
-						while f_scanning == True:
-							time.sleep(1)
-							f_airodump_parent_conn.send(f_scanning)
-							deauth_parent_conn.send(f_scanning)
+						while f_scanner.state == True:
+							f_airodump_parent_conn.send(f_scanner.state)
+							deauth_parent_conn.send(f_scanner.state)
 							deauth = deauth_parent_conn.recv()
-							time.sleep(8)
+							time.sleep(8)   #optimise this time based on packet captures time plots
 							if deauth == True:
 								files_handshake = os.listdir(handshake_dir)
 								#print colored("DEBUG: files in HS folder:", 'red')   #debug
@@ -354,9 +363,9 @@ if __name__ == '__main__':
 											f_xml.cracked = 'True'
 											f_xml.xml_tree()
 											f_xml.xml_write(target_dir+f_xml.name+'.xml')   
-											f_scanning = False
-											f_airodump_parent_conn.send(f_scanning)
-											deauth_parent_conn.send(f_scanning)
+											f_scanner.state = False
+											f_airodump_parent_conn.send(f_scanner.state)
+											deauth_parent_conn.send(f_scanner.state)
 											f_airodump_parent_conn.close()
 											deauth_parent_conn.close()
 											time.sleep(1)                                           
@@ -371,8 +380,9 @@ if __name__ == '__main__':
 											strip_valid.strip(handshake_dir+valid.SSID+'_GOOD_strip.cap')
 											strip_valid.validate_handshake()
 											strip_valid.analyze()
-											print colored("Deleting source PCAP file...", 'red')
-											os.remove(handshake_dir+valid.SSID+'_GOOD.cap')
+											if strip_valid.validation_result or strip_valid.analyze_result ==True:
+												print colored("Deleting source PCAP file...", 'red')
+												os.remove(handshake_dir+valid.SSID+'_GOOD.cap')
 											break
 										else:
 											#delete pcap file and continue
@@ -391,17 +401,17 @@ if __name__ == '__main__':
 															pass
 #time-out in case no handshakes are captured
 ##make this option (length in seconds) controllable via args???         
-							if f_scanning == True:
+							if f_scanner.state == True:
 								print "Focussed attack now running for: %.0f seconds" % (time.time() - time_started)
-								if time.time() - time_started >= 30:
+								if f_scanner.start_time - time_started >= 30:
 									print "Times up, aborting focussed attack..."
 									f_xml.cracked = 'Timeout'
 									#print "testing here:", f_xml.cracked        #debug
 									f_xml.xml_tree()
 									f_xml.xml_write(target_dir+f_xml.name+'.xml')   
-									f_scanning = False
-									f_airodump_parent_conn.send(f_scanning)
-									deauth_parent_conn.send(f_scanning)
+									f_scanner.state = False
+									f_airodump_parent_conn.send(f_scanner.state)
+									deauth_parent_conn.send(f_scanner.state)
 									f_airodump_parent_conn.close()
 									deauth_parent_conn.close()
 									break   
