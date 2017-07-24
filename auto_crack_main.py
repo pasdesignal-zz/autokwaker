@@ -268,7 +268,6 @@ if __name__ == '__main__':
 				if time.time() - g_scanner.start_time >= 9999:
 					print "Times up, aborting general scan..."  
 					g_scanner.state = False
-					#scanning = False
 				if file_list != []:
 #test for APs that havent previously been cracked/timed-out
 					for _file in file_list:
@@ -276,22 +275,23 @@ if __name__ == '__main__':
 						_xml.parse_deets()
 						if str(_xml.cracked) == 'False':
 							print colored("Targets detected, aborting general scan...", 'green')
+							logging.debug("WIFI AP that ahs triggered focussed attack:%.0f" % _xml.name)
 							g_scanner.state = False
-							#scanning = False
 							break
 #also test for Timeout APs if using persistent mode							
-						if str(_xml.cracked) == 'Timeout' and per_arg == True:
-							print colored("Targets detected, aborting general scan...", 'green')
-							g_scanner.state = False
-							#scanning = False
-							break		      
+						if str(_xml.cracked) == 'Timeout':
+							if per_arg == True:
+								print colored("Targets detected, aborting general scan...", 'green')
+								logging.debug("WIFI AP that ahs triggered focussed attack:%.0f" % _xml.name)
+								g_scanner.state = False
+								break		      
 			observer.stop()     
 			airodump_parent_conn.send(g_scanner.state)
 			airodump_parent_conn.close()
 			if file_list != []:
 #parse xml exported previously with target deets
 				sort_list = sort_by_power(target_dir+"*.xml")
-				#print "sort_list:", sort_list
+				logging.debug("sort_list:%.0f" % sort_list)
 				ignore_aps = create_ignore_list()
 				print "Ignoring previously scanned networks:", ignore_aps
 				scan_list = [x for x in sort_list if x not in ignore_aps]
@@ -302,7 +302,6 @@ if __name__ == '__main__':
 					f_xml.parse_deets()     
 					if f_xml.cracked != 'True':        #Test if AP has already been cracked    
 #start airodump-ng focussed attack using deets parsed from xml
-						print ("!!!!!! f_xml.cracked not True:", f_xml.cracked)
 						print colored("Creating focussed scanner object:", 'green'), colored(f_xml.name, 'green')
 						f_scanner = scanner(iface)
 						#print "f_scanner:", f_scanner                  #debug
