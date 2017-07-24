@@ -26,6 +26,8 @@ from termcolor import colored #requires: pip install termcolor
 
 ####improvements:
 #
+##'Recon' mode to have option to do non destructive discovery only
+#
 ##create temp folders automatically and clean up when finished
 #
 #Report on make/model of attached clients
@@ -34,15 +36,9 @@ from termcolor import colored #requires: pip install termcolor
 #
 ##Auto detect interface that is in monitor mode/check
 #
-##Add args feature to alter things like scan time for initial general scan loop or to rescan previously failed APs
-#
 #"ignore list of previous APs" should be selectable at cmd line variable - almost there... can accept command line variables now
 #
-##Accept ignore list as comma seperated list
-#
 ##Test that the wifi adaptors are setup correctly
-#
-##Add feature to be persistent - i.e. persist with timeout APs
 
 #Dev null variable for subprocesses
 DN = open(os.devnull, 'w')
@@ -246,24 +242,22 @@ if __name__ == '__main__':
 	try:
 		while True:
 			tidy()
-			#print "Creating general scanner object"
+			logging.debug("Creating general scanner object")
 			g_scanner = scanner(iface)
-			#print "g_scanner:", g_scanner                  #debug
-			#print "Creating pipe for general scan"         #Pipes for control of external application processes
+			logging.debug("Creating pipe for general scan")         #Pipes for control of external application processes
 			airodump_parent_conn, airodump_child_conn = Pipe()
-			#print "Creating process for general scan"
+			logging.debug("Creating process for general scan")
 			airodump = Process(target=g_scanner.scan, kwargs={
 			'out_format':'netxml', 
 			'out_dest':output_dir, 
 			'conn':airodump_child_conn,
 			'interval': secs_arg})                              #This interval should be configurable by cmd line variable
-			#print  "Creating process for folder watch"
+			logging.debug("Creating process for folder watch")
 			observer = Observer()                           #folder watchdog process to monitor outputxml from airodump-ng
 			observer.schedule(MyHandler(), path=output_dir)
 			airodump.start()
 			g_scanner.state = True
-			#scanning = True
-			#print "time_started:%.0f" % time_started           #debug
+			logging.debug("time_started:%.0f" % time_started)           #debug
 			print colored("Starting folder watchdog...", 'green')
 			observer.start()
 			while g_scanner.state == True:
