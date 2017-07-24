@@ -402,8 +402,8 @@ if __name__ == '__main__':
 #time-out in case no handshakes are captured
 ##make this option (length in seconds) controllable via args???         
 							if f_scanner.state == True:
-								print "Focussed attack now running for: %.0f seconds" % (time.time() - time_started)
-								if f_scanner.start_time - time_started >= 30:
+								print "Focussed attack now running for: %.0f seconds" % (time.time() - f_scanner.start_time)
+								if f_scanner.start_time - time.time() >= 30:
 									print "Times up, aborting focussed attack..."
 									f_xml.cracked = 'Timeout'
 									#print "testing here:", f_xml.cracked        #debug
