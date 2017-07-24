@@ -269,7 +269,7 @@ if __name__ == '__main__':
 			while g_scanner.state == True:
 				time.sleep(1)
 				airodump_parent_conn.send(g_scanner.state)
-				print "General scan now running for: %.0f seconds" % (time.time() - time_started)
+				print "General scan now running for: %.0f seconds" % (time.time() - g_scanner.start_time)
 				file_list = os.listdir(target_dir)
 				if time.time() - g_scanner.start_time >= 9999:
 					print "Times up, aborting general scan..."  
