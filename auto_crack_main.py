@@ -292,7 +292,7 @@ if __name__ == '__main__':
 							#scanning = False
 							break		      
 			observer.stop()     
-			airodump_parent_conn.send(scanning)
+			airodump_parent_conn.send(g_scanner.state)
 			airodump_parent_conn.close()
 			if file_list != []:
 #parse xml exported previously with target deets
