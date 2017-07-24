@@ -275,14 +275,14 @@ if __name__ == '__main__':
 						_xml.parse_deets()
 						if str(_xml.cracked) == 'False':
 							print colored("Targets detected, aborting general scan...", 'green')
-							logging.debug("WIFI AP that ahs triggered focussed attack:%.0f" % _xml.name)
+							logging.debug("WIFI AP triggered focussed attack:%s" % _xml.name)
 							g_scanner.state = False
 							break
 #also test for Timeout APs if using persistent mode							
 						if str(_xml.cracked) == 'Timeout':
 							if per_arg == True:
 								print colored("Targets detected, aborting general scan...", 'green')
-								logging.debug("WIFI AP that ahs triggered focussed attack:%.0f" % _xml.name)
+								logging.debug("WIFI AP triggered focussed attack:%s" % _xml.name)
 								g_scanner.state = False
 								break		      
 			observer.stop()     
@@ -291,7 +291,7 @@ if __name__ == '__main__':
 			if file_list != []:
 #parse xml exported previously with target deets
 				sort_list = sort_by_power(target_dir+"*.xml")
-				logging.debug("sort_list:%.0f" % sort_list)
+				logging.debug("sort_list:%s" % sort_list)
 				ignore_aps = create_ignore_list()
 				print "Ignoring previously scanned networks:", ignore_aps
 				scan_list = [x for x in sort_list if x not in ignore_aps]
