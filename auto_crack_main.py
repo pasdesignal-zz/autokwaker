@@ -42,6 +42,8 @@ from termcolor import colored #requires: pip install termcolor
 ##Test that the wifi adaptors are setup correctly
 #
 ##Add option to set time to finish scanning altogether
+#
+##Add option to set sensistivity for attack threshld (power received)
 
 #Dev null variable for subprocesses
 DN = open(os.devnull, 'w')
@@ -302,10 +304,9 @@ if __name__ == '__main__':
 				scan_list = [x for x in sort_list if x not in ignore_aps]
 				print "Suitable Wifi APs for handshake detection:", scan_list
 				for AP in scan_list:
-					logging.debug("target_dir+file:%s" % (target_dir+file))        #debug
 					f_xml = xml_machine(target_dir+AP[0]+".xml")
 					f_xml.parse_deets()     
-					#if f_xml.cracked != 'True':        #Test if AP has already been cracked    
+					#if f_xml.cracked != 'True':        #This should not be needed by now due to ignore list??? 
 #start airodump-ng focussed attack using deets parsed from xml
 					print colored("Creating focussed scanner object:", 'green'), colored(f_xml.name, 'green')
 					f_scanner = scanner(iface)
