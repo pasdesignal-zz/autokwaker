@@ -67,8 +67,9 @@ def parse_args(argv):
 	_tidy = 'y'
 	secs = 30
 	per = False
+	recon = False
 	try:
-		opts, args = getopt.getopt(argv,"vphi:t:s:",["ignore=","_tidy=","secs="])
+		opts, args = getopt.getopt(argv,"rvphi:t:s:",["ignore=","_tidy=","secs="])
 	except getopt.GetoptError:
 		print 'auto_crack_main.py -i <"ignore APs list"> -t <delete working files automatically "y" or "n"> -s <"seconds"> -p <persistent mode>'
 		sys.exit(2)
@@ -85,11 +86,14 @@ def parse_args(argv):
 		elif opt == '-p':
 			per = True
 		elif opt == '-v':
-			logging.basicConfig(level=logging.DEBUG)	     
-	return ignore, _tidy, secs, per
+			logging.basicConfig(level=logging.DEBUG)	
+		elif opt == '-r':
+			recon = True	     
+	return ignore, _tidy, secs, per, recon
 
-ignore_arg, tidy_arg, secs_arg, per_arg = parse_args(sys.argv[1:])
+ignore_arg, tidy_arg, secs_arg, per_arg, recon_arg = parse_args(sys.argv[1:])
 logging.debug('Only shown in debug mode')
+print("Recon:", recon_arg)
 
 class MyHandler(PatternMatchingEventHandler):
 	
@@ -102,7 +106,7 @@ class MyHandler(PatternMatchingEventHandler):
 		time.sleep(0.1)
 		w_xml = xml_machine('%s' % event.src_path)
 		crackable_list = w_xml.crackables()
-		logging.debug("crackable_list:", crackable_list)        #debug
+		#logging.info("crackable_list:", crackable_list)        #debug
 		if crackable_list == '0':
 			print "no luck buddy, keep trying"
 		else:
