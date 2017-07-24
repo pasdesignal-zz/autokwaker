@@ -25,6 +25,8 @@ from geolocate_api import buildJson, geolocate
 from termcolor import colored #requires: pip install termcolor
 
 ####improvements:
+
+###!!!!!!FIX BUG with ignore list being ignored once one AP is scanned....!!!!!!!!!!!
 #
 ##'Recon' mode to have option to do non destructive discovery only
 ##Break out attack and verify vectors into modules
