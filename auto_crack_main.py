@@ -297,8 +297,9 @@ if __name__ == '__main__':
 					#print "target_dir+file:", (target_dir+file)        #debug
 					f_xml = xml_machine(target_dir+AP[0]+".xml")
 					f_xml.parse_deets()     
-					if str(f_xml.cracked) == "False":                   #Test if AP has already been cracked    
+					if f_xml.cracked not True:        #Test if AP has already been cracked    
 #start airodump-ng focussed attack using deets parsed from xml
+						print ("!!!!!! f_xml.cracked not True:", f_xml.cracked)
 						print colored("Creating focussed scanner object:", 'green'), colored(f_xml.name, 'green')
 						f_scanner = scanner(iface)
 						#print "f_scanner:", f_scanner                  #debug
