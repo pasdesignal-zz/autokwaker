@@ -94,7 +94,7 @@ ignore_arg, tidy_arg, secs_arg, per_arg, recon_arg = parse_args(sys.argv[1:])
 print("Tidy file cleanup mode:", tidy_arg)
 print("Recon:", recon_arg)
 print("Persistent mode:", per_arg)
-print("Verbose debug mode:", logging.level)
+#print("Verbose debug mode:", logging.level)    FIGURE THIS OUT
 print("Scanning refresh time (secs):", secs_arg)
 
 class MyHandler(PatternMatchingEventHandler):
