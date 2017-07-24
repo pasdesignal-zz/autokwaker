@@ -257,7 +257,7 @@ if __name__ == '__main__':
 			observer.schedule(MyHandler(), path=output_dir)
 			airodump.start()
 			g_scanner.state = True
-			logging.debug("time_started:%.0f" % time_started)           #debug
+			logging.debug("time_started:%.0f" % g_scanner.start_time)           #debug
 			print colored("Starting folder watchdog...", 'green')
 			observer.start()
 			while g_scanner.state == True:
