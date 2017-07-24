@@ -302,7 +302,7 @@ if __name__ == '__main__':
 				scan_list = [x for x in sort_list if x not in ignore_aps]
 				print "Suitable Wifi APs for handshake detection:", scan_list
 				for AP in scan_list:
-					logging.debug("target_dir+file:%s" % str(target_dir+file))        #debug
+					logging.debug("target_dir+file:%s" % (target_dir+file))        #debug
 					f_xml = xml_machine(target_dir+AP[0]+".xml")
 					f_xml.parse_deets()     
 					#if f_xml.cracked != 'True':        #Test if AP has already been cracked    
