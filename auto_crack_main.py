@@ -442,7 +442,8 @@ if __name__ == '__main__':
 	except KeyboardInterrupt:
 		print "manually interrupted!"
 		tidy_output()
-		tidy_targets()
+		if recon_arg == False: 
+			tidy_targets()
 		tidy_handshakes()
 #export processed handshake file and email to processing server
 #return to top of loop and continue scanning...
