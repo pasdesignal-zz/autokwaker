@@ -169,9 +169,8 @@ class MyHandler(PatternMatchingEventHandler):
 		if os.path.exists(event.src_path):
 			self.process(event)
 
-def tidy():
-#Housekeeping function to remove old files  
-	#check that command line arguments hasnt disabled tidy function (for dev/testing)
+#Housekeeping functions to remove old files  
+def tidy_output():
 	if (tidy_arg != 'n'):
 		print "Housekeeping..."
 		files_xml = os.listdir(output_dir)
@@ -181,21 +180,28 @@ def tidy():
 				os.remove(output_dir+file)        
 			except OSError:
 				pass
+	else:
+		print "No housekeeping..."          
+
+def tidy_targets():
+	if (tidy_arg != 'n'):
 		files_targets = os.listdir(target_dir)
 		for file in files_targets:
-#test for "self.cracked == False"
 			remove_xml = xml_machine(target_dir+file)
 			remove_xml.parse_deets()
-			#print "remove_xml.cracked:", remove_xml.cracked                #debug
 			if str(remove_xml.cracked) != 'True':
 				try:
 					print "Removing target xml file:", (target_dir+file)
 					os.remove(target_dir+file)   
 				except OSError:
 					pass
+	else:
+		print "No housekeeping..."              
+
+def tidy_handshakes():
+	if (tidy_arg != 'n'):   
 		files_handshake = os.listdir(handshake_dir)
 		for file in  files_handshake:
-			#test for filename without word "strip" in it 
 			file_string = str(file)
 			good_test = file_string.find("GOOD")
 			if good_test == -1:
@@ -258,7 +264,9 @@ def geo_locate(bssid, strength, ratio):
 if __name__ == '__main__':
 	try:
 		while True:
-			tidy()
+			tidy_output()
+			tidy_targets()
+			tidy_handshakes()
 			logging.debug("Creating general scanner object")
 			g_scanner = scanner(iface)
 			logging.debug("Creating pipe for general scan")         #Pipes for control of external application processes
@@ -419,14 +427,17 @@ if __name__ == '__main__':
 									deauth_parent_conn.close()
 									break                      
 					if recon_arg != False:
-						print colored("Recon mode enabled, de-auth bypassed:", 'red'), colored(AP[0], 'yellow')		
-				print "*******Tidy..."
-				tidy()
+						print colored("Recon mode enabled, de-auth bypassed:", 'red'), colored(AP[0], 'yellow')
+						tidy_arg = 'y'
+						tidy_targets()
+						tidy_arg = 'n'
 			else:
 				print "No suitable networks detected."
 			time.sleep(1)
 	except KeyboardInterrupt:
 		print "manually interrupted!"
-		tidy()
+		tidy_output()
+		tidy_targets()
+		tidy_handshakes()
 #export processed handshake file and email to processing server
 #return to top of loop and continue scanning...
