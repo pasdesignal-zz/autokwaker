@@ -165,7 +165,7 @@ class MyHandler(PatternMatchingEventHandler):
 #Housekeeping functions to remove old files  
 def tidy_output():
 	if (tidy_arg != 'n'):
-		print "Housekeeping..."
+		print "Housekeeping...output"
 		files_xml = os.listdir(output_dir)
 		print "removing existing xml files:", files_xml
 		for file in  files_xml:
@@ -178,6 +178,7 @@ def tidy_output():
 
 def tidy_targets():
 	if (tidy_arg != 'n'):
+		print "Housekeeping...targets"
 		files_targets = os.listdir(target_dir)
 		for file in files_targets:
 			remove_xml = xml_machine(target_dir+file)
@@ -192,7 +193,8 @@ def tidy_targets():
 		print "No housekeeping..."              
 
 def tidy_handshakes():
-	if (tidy_arg != 'n'):   
+	if (tidy_arg != 'n'):  
+		print "Housekeeping...handshakes" 
 		files_handshake = os.listdir(handshake_dir)
 		for file in  files_handshake:
 			file_string = str(file)
