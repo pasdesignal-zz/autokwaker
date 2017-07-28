@@ -102,7 +102,7 @@ def parse_args(argv):
 
 ignore_arg, tidy_arg, secs_arg, per_arg, recon_arg, geo_arg = parse_args(sys.argv[1:])
 print("Tidy file cleanup mode:", tidy_arg)
-print("Recon:", recon_arg)
+print("Reconnaissance mode:", recon_arg)
 print("Persistent mode:", per_arg)
 #print("Verbose debug mode:", logging.level)    FIGURE THIS OUT
 print("Scanning refresh time (secs):", secs_arg)
@@ -262,7 +262,7 @@ if __name__ == '__main__':
 			logging.debug("Creating general scanner object")
 			g_scanner = scanner(iface)
 			logging.debug("Creating pipe for general scan")         #Pipes for control of external application processes
-			airodump_parent_conn, airodump_child_conn = Pipe()
+			airodump_parent_conn, airodump_child_conn = Pipe()      #should these pipes be setup witin scanner method?
 			logging.debug("Creating process for general scan")
 			airodump = Process(target=g_scanner.scan, kwargs={
 			'out_format':'netxml', 
@@ -282,7 +282,7 @@ if __name__ == '__main__':
 				airodump_parent_conn.send(g_scanner.state)
 				print "General scan now running for: %.0f seconds" % (time.time() - g_scanner.start_time)
 				file_list = os.listdir(target_dir)
-				if time.time() - g_scanner.start_time >= 9999:
+				if time.time() - g_scanner.start_time >= 9999:    #does this need to be set by user?
 					print "Times up, aborting general scan..."  
 					g_scanner.state = False
 				if file_list != []:
@@ -314,16 +314,17 @@ if __name__ == '__main__':
 				scan_list = [x for x in sort_list if x not in ignore_aps]
 				print "Suitable Wifi APs for handshake detection:", scan_list
 				for AP in scan_list:
+					if recon_arg == True:
+						print colored("Recon mode enabled, de-auth bypassed:", 'red'), colored(f_xml.name, 'yellow')
+						break
 					f_xml = xml_machine(target_dir+AP[0]+".xml")
-					f_xml.parse_deets()     
-					#if f_xml.cracked != 'True':        #This should not be needed by now due to ignore list??? 
+					f_xml.parse_deets()
 #start airodump-ng focussed attack using deets parsed from xml
-					print colored("Creating focussed scanner object:", 'green'), colored(f_xml.name, 'green')
+					print colored("Creating focussed scanner object:", 'green'), colored(f_xml.name, 'yellow')
 					f_scanner = scanner(iface)
-					#print "f_scanner:", f_scanner                  #debug
-					f_airodump_parent_conn, f_airodump_child_conn = Pipe()
-					deauth_parent_conn, deauth_child_conn = Pipe()
-					f_airodump = Process(target=f_scanner.scan, kwargs={ 
+					f_airodump_parent_conn, f_airodump_child_conn = Pipe()  #should these pipes be setup witin scanner method?
+					deauth_parent_conn, deauth_child_conn = Pipe()  		#should these pipes be setup witin scanner method?
+					f_airodump = Process(target=f_scanner.scan, kwargs={    #couldn't they just be a clas attribute of scanner?
 					'out_format':'pcap', 
 					'out_dest':handshake_dir, 
 					'channel':f_xml.channel,
@@ -421,8 +422,7 @@ if __name__ == '__main__':
 								break                        
 			else:
 				print "No suitable networks detected."
-			time.sleep(2)
-			print "up to here..."   
+			time.sleep(1)
 	except KeyboardInterrupt:
 		print "manually interrupted!"
 		tidy()
