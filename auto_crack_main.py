@@ -241,7 +241,7 @@ def create_ignore_list():
 			if per_arg == False:
 				if str(ignore_xml.cracked) == 'Timeout':
 					ignore_list.append(ignore_xml.name) 
-	print "ignore_list:", ignore_list       
+	#print "ignore_list:", ignore_list       
 	return ignore_list
 
 #uses googles geo-location API
@@ -324,6 +324,8 @@ if __name__ == '__main__':
 				scan_list = [x for x in sort_list if x not in ignore_aps]
 				print "Suitable Wifi APs for handshake detection:", scan_list
 				for AP in scan_list:
+					f_xml = xml_machine(target_dir+AP[0]+".xml")
+					f_xml.parse_deets()
 					if recon_arg == False:
 						f_xml = xml_machine(target_dir+AP[0]+".xml")
 						f_xml.parse_deets()
@@ -430,10 +432,7 @@ if __name__ == '__main__':
 									break                      
 					if recon_arg != False:
 						print colored("Recon mode enabled, de-auth bypassed:", 'red'), colored(AP[0], 'yellow')
-						_tidy_arg = tidy_arg
-						tidy_arg = 'y'
-						tidy_targets()
-						tidy_arg = _tidy_arg
+						f_xml.cracked = 'Timeout'
 			else:
 				print "No suitable networks detected."
 			time.sleep(1)
