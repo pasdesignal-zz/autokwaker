@@ -428,9 +428,10 @@ if __name__ == '__main__':
 									break                      
 					if recon_arg != False:
 						print colored("Recon mode enabled, de-auth bypassed:", 'red'), colored(AP[0], 'yellow')
+						_tidy_arg = tidy_arg
 						tidy_arg = 'y'
 						tidy_targets()
-						tidy_arg = 'n'
+						tidy_arg = _tidy_arg
 			else:
 				print "No suitable networks detected."
 			time.sleep(1)
