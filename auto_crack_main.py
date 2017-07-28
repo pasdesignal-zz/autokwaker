@@ -31,6 +31,8 @@ from termcolor import colored #requires: pip install termcolor
 ##'Recon' mode to have option to do non destructive discovery only
 ##Break out attack and verify vectors into modules
 #
+#Option to enable/disable geo-locate method
+#
 ##create temp folders automatically and clean up when finished
 #
 #Report on make/model of attached clients
@@ -71,8 +73,9 @@ def parse_args(argv):
 	secs = 30
 	per = False
 	recon = False
+	geo = True
 	try:
-		opts, args = getopt.getopt(argv,"rvphi:t:s:",["ignore=","_tidy=","secs="])
+		opts, args = getopt.getopt(argv,"rvphi:t:s:g:",["ignore=","_tidy=","secs="])
 	except getopt.GetoptError:
 		print 'auto_crack_main.py -i <"ignore APs list"> -t <delete working files automatically "y" or "n"> -s <"seconds"> -p <persistent mode>'
 		sys.exit(2)
@@ -91,15 +94,19 @@ def parse_args(argv):
 		elif opt == '-v':
 			logging.basicConfig(level=logging.DEBUG)	
 		elif opt == '-r':
-			recon = True	     
-	return ignore, _tidy, secs, per, recon
+			recon = True
+		elif opt in ("-g", "--geo"):
+			if arg == 'n':
+				geo = False
+	return ignore, _tidy, secs, per, recon, geo
 
-ignore_arg, tidy_arg, secs_arg, per_arg, recon_arg = parse_args(sys.argv[1:])
+ignore_arg, tidy_arg, secs_arg, per_arg, recon_arg, geo_arg = parse_args(sys.argv[1:])
 print("Tidy file cleanup mode:", tidy_arg)
 print("Recon:", recon_arg)
 print("Persistent mode:", per_arg)
 #print("Verbose debug mode:", logging.level)    FIGURE THIS OUT
 print("Scanning refresh time (secs):", secs_arg)
+print("Geo-location API service enabled:", geo_arg)
 
 class MyHandler(PatternMatchingEventHandler):
 	
@@ -130,25 +137,26 @@ class MyHandler(PatternMatchingEventHandler):
 				if w_xml.name != 'none':
 					if w_xml.name not in ignore_aps:    ##ignore this AP
 						if w_xml.client_count != 0:
-							#geo_locate Wifi AP of interest
+							#geo_locate Wifi AP of interest. Requires at least two APs detected.
 							#first, get another close WIFI AP
-							if len(geo_list) >= 2:
-								get_index = geo_list.index(w_xml.bssid)
-								if get_index == 0:
-									closest_AP = geo_list[1]
-								if get_index >= 1:
-									closest_AP = geo_list[(get_index-1)]
-									print "OTHER AP:", closest_AP
-								location_data = buildJson(w_xml.bssid, w_xml.power, w_xml.snr, closest_AP, 0, 0)
-								print"LOCATION DATA", location_data
-								lat, lng, acc = geolocate(location_data)
-								#lat, lng, acc = geo_locate(w_xml.bssid, "0", "0")  #power and snr to be added in future.....
-								#print 'lat:', lat
-								#print 'lng:', lng
-								#print 'acc:', acc
-								w_xml.geo_lat = lat
-								w_xml.geo_long = lng
-								w_xml.geo_accuracy = acc
+							if geo_arg != False:
+								if len(geo_list) >= 2:
+									get_index = geo_list.index(w_xml.bssid)
+									if get_index == 0:
+										closest_AP = geo_list[1]
+									if get_index >= 1:
+										closest_AP = geo_list[(get_index-1)]
+										print "OTHER AP:", closest_AP
+									location_data = buildJson(w_xml.bssid, w_xml.power, w_xml.snr, closest_AP, 0, 0)
+									print"LOCATION DATA", location_data
+									lat, lng, acc = geolocate(location_data)
+									#lat, lng, acc = geo_locate(w_xml.bssid, "0", "0")  #power and snr to be added in future.....
+									#print 'lat:', lat
+									#print 'lng:', lng
+									#print 'acc:', acc
+									w_xml.geo_lat = lat
+									w_xml.geo_long = lng
+									w_xml.geo_accuracy = acc
 							w_xml.xml_tree()
 							w_xml.xml_write(target_dir+cracker+'.xml')
 						else:
