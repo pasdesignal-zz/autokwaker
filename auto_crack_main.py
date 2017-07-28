@@ -318,7 +318,7 @@ if __name__ == '__main__':
 					#if recon_arg == True:
 					#	print colored("Recon mode enabled, de-auth bypassed:", 'red'), colored(AP[0], 'yellow')
 					#	break
-					if recon_arg != False:
+					if recon_arg == False:
 						f_xml = xml_machine(target_dir+AP[0]+".xml")
 						f_xml.parse_deets()
 	#start airodump-ng focussed attack using deets parsed from xml
