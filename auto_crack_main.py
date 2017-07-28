@@ -420,6 +420,7 @@ if __name__ == '__main__':
 								f_airodump_parent_conn.close()
 								deauth_parent_conn.close()
 								break                        
+			    print "?????? here now..."
 			else:
 				print "No suitable networks detected."
 			time.sleep(1)
