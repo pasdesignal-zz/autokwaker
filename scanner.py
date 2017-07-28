@@ -103,7 +103,7 @@ class scanner(object):
 					
 # Sends interrupt signal to process
 	def send_interrupt(self):
-		print colored("attempting to kill process:", 'red'), colored(self.proc.pid, 'red')		#debug
+		#print colored("attempting to kill process:", 'red'), colored(self.proc.pid, 'red')		#debug
 		try:
 			self.proc.terminate()
 		except EnvironmentError:

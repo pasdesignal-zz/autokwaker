@@ -116,7 +116,7 @@ class MyHandler(PatternMatchingEventHandler):
 	def process(self, event):
 		print "Path =", event.src_path                 #debug
 		print event.src_path, event.event_type         #debug
-		time.sleep(0.1)
+		#time.sleep(1)
 		w_xml = xml_machine('%s' % event.src_path)
 		crackable_list = w_xml.crackables()
 		#logging.info("crackable_list:", crackable_list)        #debug
@@ -158,8 +158,9 @@ class MyHandler(PatternMatchingEventHandler):
 	def on_modified(self, event):
 		print "modified observer =", observer
 		print event.src_path
-		time.sleep(1)
+		time.sleep(0.1)
 		if os.path.exists(event.src_path):
+			time.sleep(1)
 			self.process(event)
 
 #Housekeeping functions to remove old files  
