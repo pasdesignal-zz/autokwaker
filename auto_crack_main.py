@@ -190,7 +190,7 @@ def tidy_targets():
 		for file in files_targets:
 			remove_xml = xml_machine(target_dir+file)
 			remove_xml.parse_deets()
-			if str(remove_xml.cracked) != 'True':
+			if str(remove_xml.cracked) == 'False' or if str(remove_xml.cracked) == 'Timeout':
 				try:
 					print "Removing target xml file:", (target_dir+file)
 					os.remove(target_dir+file)   
