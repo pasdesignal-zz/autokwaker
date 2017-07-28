@@ -117,11 +117,10 @@ class MyHandler(PatternMatchingEventHandler):
 		#print event.src_path, event.event_type         #debug
 		w_xml = xml_machine('%s' % event.src_path)
 		crackable_list = w_xml.crackables()
-		#logging.info("crackable_list:", crackable_list)        #debug
+		#print("crackable_list:", crackable_list)        #debug
 		if crackable_list == '0':
 			print "no luck buddy, keep trying"
 		else:
-			print "Potential target WIFI AP(s) detected..."
 			geo_list = []
 			for cracker in crackable_list:
 				w_xml.parse_deets(cracker)
@@ -131,6 +130,7 @@ class MyHandler(PatternMatchingEventHandler):
 				ignore_aps = create_ignore_list()
 				if w_xml.name != 'none':
 					if w_xml.name not in ignore_aps:    ##ignore this AP
+						print "Potential target WIFI AP(s) detected..."
 						if w_xml.client_count != 0:
 							#geo_locate Wifi AP of interest. Requires at least two APs detected.
 							#first, get another close WIFI AP
@@ -151,7 +151,7 @@ class MyHandler(PatternMatchingEventHandler):
 							w_xml.xml_tree()
 							w_xml.xml_write(target_dir+cracker+'.xml')
 						else:
-							print "No suitable WIFI AP(s) detected, continuing to scan..."  
+							print "No WIFI AP clients detected, continuing to scan..."  
 
 	def on_modified(self, event):
 		#print "modified observer =", observer
