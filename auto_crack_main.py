@@ -315,7 +315,7 @@ if __name__ == '__main__':
 				print "Suitable Wifi APs for handshake detection:", scan_list
 				for AP in scan_list:
 					if recon_arg == True:
-						print colored("Recon mode enabled, de-auth bypassed:", 'red'), colored(f_xml.name, 'yellow')
+						print colored("Recon mode enabled, de-auth bypassed:", 'red'), colored(AP[0], 'yellow')
 						break
 					f_xml = xml_machine(target_dir+AP[0]+".xml")
 					f_xml.parse_deets()
