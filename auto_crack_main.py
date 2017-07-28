@@ -92,7 +92,7 @@ def parse_args(argv):
 		elif opt == '-p':
 			per = True
 		elif opt == '-v':
-			logging.basicConfig(level=logging.DEBUG)	
+			logging.basicConfig(level=logging.DEBUG)    
 		elif opt == '-r':
 			recon = True
 		elif opt in ("-g", "--geo"):
@@ -232,7 +232,7 @@ def create_ignore_list():
 		else:
 			if per_arg == False:
 				if str(ignore_xml.cracked) == 'Timeout':
-					ignore_list.append(ignore_xml.name)	
+					ignore_list.append(ignore_xml.name) 
 	print "ignore_list:", ignore_list       
 	return ignore_list
 
@@ -295,13 +295,13 @@ if __name__ == '__main__':
 							logging.debug("WIFI AP triggered focussed attack:%s" % _xml.name)
 							g_scanner.state = False
 							break
-#also test for Timeout APs if using persistent mode							
+#also test for Timeout APs if using persistent mode                         
 						if str(_xml.cracked) == 'Timeout':
 							if per_arg == True:
 								print colored("Targets detected, aborting general scan...", 'green')
 								logging.debug("WIFI AP triggered focussed attack:%s" % _xml.name)
 								g_scanner.state = False
-								break		      
+								break             
 			observer.stop()     
 			airodump_parent_conn.send(g_scanner.state)
 			airodump_parent_conn.close()
@@ -323,7 +323,7 @@ if __name__ == '__main__':
 					print colored("Creating focussed scanner object:", 'green'), colored(f_xml.name, 'yellow')
 					f_scanner = scanner(iface)
 					f_airodump_parent_conn, f_airodump_child_conn = Pipe()  #should these pipes be setup witin scanner method?
-					deauth_parent_conn, deauth_child_conn = Pipe()  		#should these pipes be setup witin scanner method?
+					deauth_parent_conn, deauth_child_conn = Pipe()          #should these pipes be setup witin scanner method?
 					f_airodump = Process(target=f_scanner.scan, kwargs={    #couldn't they just be a clas attribute of scanner?
 					'out_format':'pcap', 
 					'out_dest':handshake_dir, 
@@ -419,8 +419,8 @@ if __name__ == '__main__':
 								deauth_parent_conn.send(f_scanner.state)
 								f_airodump_parent_conn.close()
 								deauth_parent_conn.close()
-								break                        
-			    print "?????? here now..."
+								break                      
+				print "?????? here now..."
 			else:
 				print "No suitable networks detected."
 			time.sleep(1)
