@@ -158,7 +158,15 @@ class MyHandler(PatternMatchingEventHandler):
 		print "modified observer =", observer
 		print event.src_path
 		if os.path.exists(event.src_path):
-			time.sleep(1.5)
+			file_stopped = 0
+			while file_stopped == 0:
+				size1 = os.path.getsize(event.src_path)
+				print "File size:", size1
+				time.sleep(0.2)
+				size2 = os.path.getsize(event.src_path)
+				print "File size:", size2
+				if size1 == size2:
+					file_stopped = 1
 			self.process(event)
 
 #Housekeeping functions to remove old files  
