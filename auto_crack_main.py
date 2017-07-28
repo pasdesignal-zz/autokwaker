@@ -187,7 +187,7 @@ def tidy():
 			remove_xml = xml_machine(target_dir+file)
 			remove_xml.parse_deets()
 			#print "remove_xml.cracked:", remove_xml.cracked                #debug
-			if str(remove_xml.cracked) == 'False':
+			if str(remove_xml.cracked) != 'True':
 				try:
 					print "Removing target xml file:", (target_dir+file)
 					os.remove(target_dir+file)   
@@ -420,7 +420,8 @@ if __name__ == '__main__':
 									break                      
 					if recon_arg != False:
 						print colored("Recon mode enabled, de-auth bypassed:", 'red'), colored(AP[0], 'yellow')		
-				print "?????? here now..."
+				print "*******Tidy..."
+				tidy()
 			else:
 				print "No suitable networks detected."
 			time.sleep(1)
