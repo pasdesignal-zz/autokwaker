@@ -432,7 +432,7 @@ if __name__ == '__main__':
 									break                      
 					if recon_arg != False:
 						print colored("Recon mode enabled, de-auth bypassed:", 'red'), colored(AP[0], 'yellow')
-						f_xml.cracked = 'Timeout'
+						f_xml.cracked = 'Recon'
 			else:
 				print "No suitable networks detected."
 			time.sleep(1)
