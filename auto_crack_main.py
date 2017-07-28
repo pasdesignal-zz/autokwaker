@@ -191,7 +191,7 @@ def tidy_targets():
 			remove_xml = xml_machine(target_dir+file)
 			remove_xml.parse_deets()
 			print "remove_xml.cracked:", remove_xml.cracked
-			if str(remove_xml.cracked) in 'False' or str(remove_xml.cracked) in 'Timeout':
+			if str(remove_xml.cracked) in 'False':
 				try:
 					print "Removing target xml file:", (target_dir+file)
 					os.remove(target_dir+file)   
@@ -433,9 +433,9 @@ if __name__ == '__main__':
 									break                      
 					if recon_arg != False:
 						print colored("Recon mode enabled, de-auth bypassed:", 'red'), colored(AP[0], 'yellow')
-						f_xml.cracked = 'Recon'
+						f_xml.cracked = 'Timeout'
 						f_xml.xml_tree()
-						f_xml.xml_write(target_dir+f_xml.name+'.xml')
+						f_xml.xml_write(target_dir+f_xml.name+'.xml')   
 			else:
 				print "No suitable networks detected."
 			time.sleep(1)
