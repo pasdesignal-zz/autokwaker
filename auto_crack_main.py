@@ -434,6 +434,8 @@ if __name__ == '__main__':
 					if recon_arg != False:
 						print colored("Recon mode enabled, de-auth bypassed:", 'red'), colored(AP[0], 'yellow')
 						f_xml.cracked = 'Recon'
+						f_xml.xml_tree()
+						f_xml.xml_write(target_dir+f_xml.name+'.xml')
 			else:
 				print "No suitable networks detected."
 			time.sleep(1)
