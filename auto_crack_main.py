@@ -114,9 +114,9 @@ class MyHandler(PatternMatchingEventHandler):
 
 ##This needs to be improved to tolerate empty/bad xmls...
 	def process(self, event):
-		#print "Path =", event.src_path                 #debug
-		#print event.src_path, event.event_type         #debug
-		time.sleep(0.5)
+		print "Path =", event.src_path                 #debug
+		print event.src_path, event.event_type         #debug
+		time.sleep(0.1)
 		w_xml = xml_machine('%s' % event.src_path)
 		crackable_list = w_xml.crackables()
 		#logging.info("crackable_list:", crackable_list)        #debug
@@ -156,9 +156,9 @@ class MyHandler(PatternMatchingEventHandler):
 							print "No suitable WIFI AP(s) detected, continuing to scan..."  
 
 	def on_modified(self, event):
-		#print "modified observer =", observer
-		#print event.src_path
-		time.sleep(0.5)
+		print "modified observer =", observer
+		print event.src_path
+		time.sleep(1)
 		if os.path.exists(event.src_path):
 			self.process(event)
 
