@@ -167,7 +167,8 @@ class MyHandler(PatternMatchingEventHandler):
 				print "File size:", size2
 				if size1 == size2:
 					file_stopped = 1
-			self.process(event)
+			if size2 > 0:
+				self.process(event)
 
 #Housekeeping functions to remove old files  
 def tidy_output():
