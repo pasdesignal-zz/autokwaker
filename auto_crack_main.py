@@ -75,7 +75,7 @@ def parse_args(argv):
 	recon = False
 	geo = True
 	try:
-		opts, args = getopt.getopt(argv,"rvphi:t:s:g:",["ignore=","_tidy=","secs="])
+		opts, args = getopt.getopt(argv,"rvphi:t:s:g:",["ignore=","tidy=","secs=", "recon", "geo_locate=", "verbose", "persistent_mode"])
 	except getopt.GetoptError:
 		print 'auto_crack_main.py -i <"ignore APs list"> -t <delete working files automatically "y" or "n"> -s <"seconds"> -p <persistent mode>'
 		sys.exit(2)
