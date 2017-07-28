@@ -116,7 +116,7 @@ class MyHandler(PatternMatchingEventHandler):
 	def process(self, event):
 		#print "Path =", event.src_path                 #debug
 		#print event.src_path, event.event_type         #debug
-		time.sleep(0.1)
+		time.sleep(0.5)
 		w_xml = xml_machine('%s' % event.src_path)
 		crackable_list = w_xml.crackables()
 		#logging.info("crackable_list:", crackable_list)        #debug
@@ -126,11 +126,8 @@ class MyHandler(PatternMatchingEventHandler):
 			print "Potential target WIFI AP(s) detected..."
 			geo_list = []
 			for cracker in crackable_list:
-				#print "cracker:", cracker              #debug
 				w_xml.parse_deets(cracker)
-				#print "BSSD!!!!!!!", w_xml.bssid
 				geo_list.append(w_xml.bssid)
-				#print "GEO_LIST:", geo_list            #debug
 #create/check list of APs that have already been cracked/timed-out and also add any manual exceptions
 #manual exceptions should be able to be cmd line variables
 				ignore_aps = create_ignore_list()
@@ -150,10 +147,6 @@ class MyHandler(PatternMatchingEventHandler):
 									location_data = buildJson(w_xml.bssid, w_xml.power, w_xml.snr, closest_AP, 0, 0)
 									print"LOCATION DATA", location_data
 									lat, lng, acc = geolocate(location_data)
-									#lat, lng, acc = geo_locate(w_xml.bssid, "0", "0")  #power and snr to be added in future.....
-									#print 'lat:', lat
-									#print 'lng:', lng
-									#print 'acc:', acc
 									w_xml.geo_lat = lat
 									w_xml.geo_long = lng
 									w_xml.geo_accuracy = acc
@@ -165,7 +158,7 @@ class MyHandler(PatternMatchingEventHandler):
 	def on_modified(self, event):
 		#print "modified observer =", observer
 		#print event.src_path
-		#time.sleep(1)
+		time.sleep(0.5)
 		if os.path.exists(event.src_path):
 			self.process(event)
 
